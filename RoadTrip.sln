@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoadTrip", "RoadTrip.csproj", "{C350DE68-C4CE-49C0-8C04-330ADF8CC240}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoadTripDb", "..\RoadTripDb\RoadTripDb.csproj", "{EFD64888-52FF-45E2-B134-45452D7F830F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C350DE68-C4CE-49C0-8C04-330ADF8CC240}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C350DE68-C4CE-49C0-8C04-330ADF8CC240}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C350DE68-C4CE-49C0-8C04-330ADF8CC240}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFD64888-52FF-45E2-B134-45452D7F830F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD64888-52FF-45E2-B134-45452D7F830F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFD64888-52FF-45E2-B134-45452D7F830F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFD64888-52FF-45E2-B134-45452D7F830F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,9 @@ using MudBlazor.Services;
 using RoadTrip.Components;
 using RoadTrip.Components.Account;
 using RoadTrip.Data;
+using RoadTripDb.Database;
+using RoadTripDb.Database.Models;
+using RoadTripDb.Repos;
 
 namespace RoadTrip
 {
@@ -31,7 +34,7 @@ namespace RoadTrip
                 })
                 .AddIdentityCookies();
 
-            var connectionString = builder.Configuration.GetConnectionString("RoadTripIdentityDb") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("RoadTripIdentityDb") ?? throw new InvalidOperationException("Connection string 'RoadTripIdentityDb' not found.");
             builder.Services.AddDbContext<RoadTripIdentityDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -42,6 +45,15 @@ namespace RoadTrip
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<RoadTripUser>, IdentityNoOpEmailSender>();
+
+            var dataDbConnectionString = builder.Configuration.GetConnectionString("RoadTripDb") ?? throw new InvalidOperationException("Connection string 'RoadTripDb' not found.");
+            builder.Services.AddDbContext<RoadTripDbContext>(options =>
+            {
+                options.UseSqlServer(dataDbConnectionString);
+            });
+
+            builder.Services.AddScoped<IBaseRepo<HostAppUser>, BaseRepo<HostAppUser>>();
+            builder.Services.AddScoped<IHostAppUserRepo, HostAppUserRepo>();    
 
             var app = builder.Build();
 

@@ -8,7 +8,7 @@ namespace RoadTrip.Components.Layout
         {
             return new MudTheme()
             {
-                Palette = new Palette()
+                Palette = new PaletteLight()
                 {
                     Primary = "#ed420e",
                     Secondary = "#409946",
@@ -18,7 +18,7 @@ namespace RoadTrip.Components.Layout
                     Warning = "#e7eb2a",
 
                 },
-                PaletteDark = new Palette()
+                PaletteDark = new PaletteDark()
                 {
 
                 }
