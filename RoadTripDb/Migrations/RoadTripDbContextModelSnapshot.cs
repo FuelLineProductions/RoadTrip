@@ -231,7 +231,7 @@ namespace RoadTripDb.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("QuizVechicles");
+                    b.ToTable("QuizVehicles");
                 });
 
             modelBuilder.Entity("RoadTripDb.Database.Models.Room", b =>

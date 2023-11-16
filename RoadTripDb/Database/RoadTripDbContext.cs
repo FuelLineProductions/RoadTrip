@@ -20,6 +20,6 @@ namespace RoadTripDb.Database
         public DbSet<Question> Questions { get; set; } = null!;
         public DbSet<Quiz> Quizzes { get; set; } = null!;
         public DbSet<Vehicle> Vehicles { get; set; } = null!;
-        public DbSet<QuizVehicles> QuizVechicles { get; set; } = null!;
+        public DbSet<QuizVehicles> QuizVehicles { get; set; } = null!;
     }
 }

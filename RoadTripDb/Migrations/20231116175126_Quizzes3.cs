@@ -12,10 +12,10 @@ namespace RoadTripDb.Migrations
         {
             migrationBuilder.DropPrimaryKey(
                 name: "PK_QuizVechicles",
-                table: "QuizVechicles");
+                table: "QuizVehicles");
 
             migrationBuilder.RenameTable(
-                name: "QuizVechicles",
+                name: "QuizVehicles",
                 newName: "QuizVehicles");
 
             migrationBuilder.RenameColumn(
@@ -34,10 +34,10 @@ namespace RoadTripDb.Migrations
         {
             migrationBuilder.DropPrimaryKey(
                 name: "PK_QuizVechicles",
-                table: "QuizVechicles");
+                table: "QuizVehicles");
 
             migrationBuilder.RenameTable(
-                name: "QuizVechicles",
+                name: "QuizVehicles",
                 newName: "QuizVehicles");
 
             migrationBuilder.RenameColumn(

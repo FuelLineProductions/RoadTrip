@@ -30,7 +30,7 @@ namespace RoadTripDb.Repos
 
         public async Task AddVehicleToQuiz(Guid quizId, int vehicleId)
         {
-            await Context.QuizVechicles.AddAsync(new QuizVehicles() { QuizId = quizId, VehicleId = vehicleId });
+            await Context.QuizVehicles.AddAsync(new QuizVehicles() { QuizId = quizId, VehicleId = vehicleId });
             await Context.SaveChangesAsync();
         }
     }
