@@ -52,8 +52,35 @@ namespace RoadTrip
                 options.UseSqlServer(dataDbConnectionString);
             });
 
-            builder.Services.AddScoped<IBaseRepo<HostAppUser>, BaseRepo<HostAppUser>>();
-            builder.Services.AddScoped<IHostAppUserRepo, HostAppUserRepo>();    
+            builder.Services.AddTransient<IBaseRepo<HostAppUser>, BaseRepo<HostAppUser>>();
+            builder.Services.AddTransient<IHostAppUserRepo, HostAppUserRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<GuestAppUser>, BaseRepo<GuestAppUser>>();
+            builder.Services.AddTransient<IGuestAppUserRepo, GuestAppUserRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<SubscriptionTier>, BaseRepo<SubscriptionTier>>();
+            builder.Services.AddTransient<ISubscriptionTierRepo, SubscriptionTierRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<IndividualSubscription>, BaseRepo<IndividualSubscription>>();
+            builder.Services.AddTransient<IIndividualSubscriptionRepo, IndividualSubscriptionRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<GroupSubscription>, BaseRepo<GroupSubscription>>();
+            builder.Services.AddTransient<IGroupSubscriptionRepo, GroupSubscriptionRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<Room>, BaseRepo<Room>>();
+            builder.Services.AddTransient<IRoomRepo, RoomRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<FuelType>, BaseRepo<FuelType>>();
+            builder.Services.AddTransient<IFuelTypeRepo, FuelTypeRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<Question>, BaseRepo<Question>>();
+            builder.Services.AddTransient<IQuestionRepo, QuestionRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<Quiz>, BaseRepo<Quiz>>();
+            builder.Services.AddTransient<IQuizRepo, QuizRepo>();
+
+            builder.Services.AddTransient<IBaseRepo<Vehicle>, BaseRepo<Vehicle>>();
+            builder.Services.AddTransient<IVehicleRepo, VehicleRepo>();
 
             var app = builder.Build();
 

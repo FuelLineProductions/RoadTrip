@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-RoadTrip-6a47a3dd-b478-466d-a338-f9df718aef9f</UserSecretsId>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	  <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RoadTripDb\RoadTripDb.csproj" />
+    <ProjectReference Include="RoadTripDb\RoadTripDb.csproj" />
   </ItemGroup>
 
 </Project>
