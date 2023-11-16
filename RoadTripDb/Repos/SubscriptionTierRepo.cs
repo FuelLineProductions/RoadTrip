@@ -22,5 +22,10 @@ namespace RoadTripDb.Repos
                 yield return Context.SubscriptionTiers.Find(id);
             }
         }
+
+        public IQueryable<SubscriptionTier> GetQueryable()
+        {
+            return Context.SubscriptionTiers;
+        }
     }
 }

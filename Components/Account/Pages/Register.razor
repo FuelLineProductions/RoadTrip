@@ -8,6 +8,8 @@
 @using RoadTrip.Data
 @using RoadTripDb.Database.Models
 @using RoadTripDb.Repos
+@using RoadTripServices.MiddlewareModels
+@using RoadTripServices.Services
 
 @inject UserManager<RoadTripUser> UserManager
 @inject IUserStore<RoadTripUser> UserStore
@@ -16,7 +18,8 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
-@inject IHostAppUserRepo HostAppUserRepo
+@inject IUserService UserService
+@inject ISubscriptionTierRepo SubscriptionTierRepo
 
 <PageTitle>Register</PageTitle>
 
@@ -103,12 +106,18 @@
             return;
         }
 
-        await HostAppUserRepo.AddAsync(new HostAppUser()
+        var sub = SubscriptionTierRepo.GetQueryable().FirstOrDefault(sub => sub.Name.ToLower().Equals("free"));
+
+        await UserService.AddNewHost(new AddNewHostModel()
             {
-                RoadTripUserId = user.RoadTripId,
-                DisplayName = user.DisplayName,
-                Surname = user.Surname,
-                PrimaryName = user.PrimaryName
+                HostAppUser = new HostAppUser()
+                {
+                    RoadTripUserId = user.RoadTripId,
+                    DisplayName = user.DisplayName,
+                    Surname = user.Surname,
+                    PrimaryName = user.PrimaryName
+                },
+                SubscriptionTier = sub ?? new SubscriptionTier() { Name = "Free", MaxGameSaves = 1, Description = "Free subscription tier", DiscountGbp = 0, MaxGuests = 3, MaxHosts = 1, MaxRooms = 1, MonthlyCostGbp = 0, YearlyCostGbp = 0 }
             });
 
         Logger.LogInformation("User created a new account with password.");
