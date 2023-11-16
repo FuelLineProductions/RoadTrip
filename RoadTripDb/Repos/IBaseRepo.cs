@@ -13,13 +13,13 @@ namespace RoadTripDb.Repos
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        Task AddAsync(T entity);
+        Task<T> AddAsync(T entity);
         /// <summary>
         /// Update a single entity
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        Task UpdateAsync(T entity);
+        Task<T> UpdateAsync(T entity);
         /// <summary>
         /// Delete a single entity
         /// </summary>
@@ -31,13 +31,13 @@ namespace RoadTripDb.Repos
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        Task AddRangeAsync(ICollection<T>  entities);
+        Task<ICollection<T>> AddRangeAsync(ICollection<T>  entities);
         /// <summary>
         /// Update a range of entities
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        Task UpdateRangeAsync(ICollection<T> entities);
+        Task<ICollection<T>> UpdateRangeAsync(ICollection<T> entities);
         /// <summary>
         /// Remove a ranage of entities
         /// </summary>

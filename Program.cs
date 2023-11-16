@@ -8,6 +8,7 @@ using RoadTrip.Data;
 using RoadTripDb.Database;
 using RoadTripDb.Database.Models;
 using RoadTripDb.Repos;
+using RoadTripServices.Services;
 
 namespace RoadTrip
 {
@@ -81,6 +82,8 @@ namespace RoadTrip
 
             builder.Services.AddTransient<IBaseRepo<Vehicle>, BaseRepo<Vehicle>>();
             builder.Services.AddTransient<IVehicleRepo, VehicleRepo>();
+
+            builder.Services.AddTransient<IUserService, UserService>();
 
             var app = builder.Build();
 

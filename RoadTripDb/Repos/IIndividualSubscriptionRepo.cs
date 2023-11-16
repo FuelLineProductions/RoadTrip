@@ -11,6 +11,6 @@ namespace RoadTripDb.Repos
     {
         Task<IndividualSubscription?> Get(Guid id);
         IEnumerable<IndividualSubscription?> GetMany(ICollection<Guid> ids);
-
+        IQueryable<IndividualSubscription> GetQueryable();
     }
 }

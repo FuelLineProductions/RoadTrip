@@ -12,11 +12,12 @@ namespace RoadTripDb.Repos
         public readonly RoadTripDbContext Context = context;
 
         /// <inheritdoc/>
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             ArgumentNullException.ThrowIfNull(entity);
             await Context.AddAsync(entity);
             await Context.SaveChangesAsync();
+            return entity;
         }
 
         /// <inheritdoc/>
@@ -29,12 +30,13 @@ namespace RoadTripDb.Repos
         }
 
         /// <inheritdoc/>
-        public async Task UpdateAsync(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             ArgumentNullException.ThrowIfNull(entity);
 
             Context.Update(entity);
             await Context.SaveChangesAsync();
+            return entity;
         }
 
         /// <inheritdoc/>
@@ -47,21 +49,23 @@ namespace RoadTripDb.Repos
         }
 
         /// <inheritdoc/>
-        public async Task UpdateRangeAsync(ICollection<T> entities)
+        public async Task<ICollection<T>> UpdateRangeAsync(ICollection<T> entities)
         {
             ArgumentNullException.ThrowIfNull(entities);
 
             Context.UpdateRange(entities);
             await Context.SaveChangesAsync();
+            return entities;
         }
 
         /// <inheritdoc/>
-        public async Task AddRangeAsync(ICollection<T> entities)
+        public async Task<ICollection<T>> AddRangeAsync(ICollection<T> entities)
         {
             ArgumentNullException.ThrowIfNull(entities);
 
             Context.AddRange(entities);
             await Context.SaveChangesAsync();
+            return entities;
         }
     }
 }
