@@ -2,6 +2,7 @@
 @using RoadTripDb.Database.Models
 @using RoadTripDb.Repos
 @using RoadTripServices.Services
+@using RoadTrip.ViewModels
 @inject ISubscriptionTierRepo SubscriptionTierRepo
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserService UserService
@@ -11,69 +12,98 @@
 
 <MudText Typo="Typo.h3">Subscriptions</MudText>
 <MudGrid Spacing="5" Justify="Justify.Center">
-@foreach (var tier in SubscriptionTiers)
-{
-    <MudItem>
-        <MudCard Outlined="true" Elevation="1">
-            <MudCardHeader>
-                <MudText Typo="Typo.h4">@tier.Name</MudText>
-                <MudSpacer/>
-                <MudText Typo="Typo.body1">@tier.Description</MudText>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudList>
-                    <MudListItem>
-                        <MudText Typo="Typo.body1">£@tier.MonthlyCostGbp / month or £@tier.YearlyCostGbp / year</MudText>
-                    </MudListItem>
-                    @if (tier.DiscountGbp > 0)
-                    {
-                        <MudListItem>
-                            <MudText Typo="Typo.body1">Education gets a discount of £@(tier.DiscountGbp) per year, making it just £@(tier.YearlyCostGbp - tier.DiscountGbp) per year.</MudText>
-                            <MudText Typo="Typo.body2">Contact us to find out more contact@fuellineproductions.co.uk</MudText>
+    @foreach (var tier in SubscriptionTiers)
+    {
+        <MudItem>
+            <MudCard Outlined="true" Elevation="1">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">@tier.Name</MudText>
+                        <MudSpacer />
+                        <MudText Typo="Typo.body1">@tier.Description</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudList>
+                            <MudListItem>
+                                <MudText Typo="Typo.body1">£@tier.MonthlyCostGbp / month or £@tier.YearlyCostGbp / year</MudText>
                         </MudListItem>
-                    }
-                    <MudListItem>
-                        <MudText Typo="Typo.body1">Maximum hosts in this subscription @tier.MaxHosts</MudText>
-                    </MudListItem>
-                    <MudListItem>
-                        <MudText Typo="Typo.body1">Maximum games you can save @tier.MaxGameSaves</MudText>
-                    </MudListItem>
-                    <MudListItem>
-                        <MudText Typo="Typo.body1">Maximum rooms to host guests @tier.MaxRooms</MudText>
-                    </MudListItem>
-                    <MudListItem>
-                        <MudText Typo="Typo.body1">Maximum guests in each room @tier.MaxGuests</MudText>
-                    </MudListItem>
-                </MudList>
-            </MudCardContent>
-            @if (tier.MonthlyCostGbp > 0)
-            {
-                <AuthorizeView>
-                    <Authorized>
-                        <MudCardActions>
-                            <MudCheckBox @bind-Checked="Yearly" Label="Yearly (checked) (unchecked is monthly)"></MudCheckBox>
-                            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="(() => Purchase(tier))">Purchase Now</MudButton>
-                        </MudCardActions>
-                    </Authorized>
-                    <NotAuthorized>
-                        <MudText>Register or login to purchase</MudText>
-                    </NotAuthorized>
-                </AuthorizeView>
-            }
+                        @if (tier.DiscountGbp > 0)
+                        {
+                            <MudListItem>
+                                <MudText Typo="Typo.body1">Education gets a discount of £@(tier.DiscountGbp) per year, making it just £@(tier.YearlyCostGbp - tier.DiscountGbp) per year.</MudText>
+                                <MudText Typo="Typo.body2">Contact us to find out more contact@fuellineproductions.co.uk</MudText>
+                            </MudListItem>
+                        }
+                        <MudListItem>
+                            <MudText Typo="Typo.body1">Maximum hosts in this subscription @tier.MaxHosts</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText Typo="Typo.body1">Maximum games you can save @tier.MaxGameSaves</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText Typo="Typo.body1">Maximum rooms to host guests @tier.MaxRooms</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText Typo="Typo.body1">Maximum guests in each room @tier.MaxGuests</MudText>
+                            </MudListItem>
+                        </MudList>
+                    </MudCardContent>
+                    @if (tier.MonthlyCostGbp > 0)
+                {
+                    <AuthorizeView>
+                        <Authorized>
+                            <MudCardActions>
+                                <MudCheckBox @bind-Checked="Yearly" Label="Yearly (checked) (unchecked is monthly)"></MudCheckBox>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="(() => Purchase(tier))">Purchase Now</MudButton>
+                            </MudCardActions>
+                        </Authorized>
+                        <NotAuthorized>
+                            <MudText>Register or login to purchase</MudText>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                }
 
-        </MudCard>
-    </MudItem>
-}
+            </MudCard>
+        </MudItem>
+    }
 </MudGrid>
 
+<AuthorizeView>
+    <Authorized>
+        <MudCard Elevation="2" Outlined="true">
+            <MudButton OnClick="GetMySub" Variant="Variant.Filled" Color="Color.Info">Check My Individual Subscription</MudButton>
+            <MudText Typo="Typo.caption">Note: You can't see group subs here yet, just individual</MudText>
+            @if (MySub.OwnerId != Guid.Empty)
+            {
+                <MudCardHeader>
+                    <MudText Typo="Typo.h4">Your subscription tier: @MySub.TierName</MudText>
+                    </MudCardHeader>
+                <MudCardContent>
+                    @if (MySub.Expiry.HasValue)
+                    {
+                        <MudText Typo="Typo.body2">Expires on @MySub.Expiry</MudText>
+                    }
+                    else if (MySub.TierName.ToLower().Equals("free"))
+                    {
+                        <MudText Typo="Typo.body2">Free tier never expires - Enjoy!</MudText>
+                    }
+                </MudCardContent>
+
+            }
+        </MudCard>
+    </Authorized>
+    <NotAuthorized>
+        <MudText Typo="Typo.body1">Login to see your subscription status</MudText>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     List<SubscriptionTier> SubscriptionTiers { get; set; } = new();
     private bool Yearly { get; set; }
+    private MySubscription MySub { get; set; } = new() { OwnerId = Guid.Empty };
 
     protected override Task OnInitializedAsync()
     {
-        SubscriptionTiers = SubscriptionTierRepo.GetQueryable().OrderBy(x=>x.MonthlyCostGbp).ToList();
+        SubscriptionTiers = SubscriptionTierRepo.GetQueryable().OrderBy(x => x.MonthlyCostGbp).ToList();
         StateHasChanged();
         return base.OnInitializedAsync();
     }
@@ -122,8 +152,21 @@
             Snackbar.Add("Successfully purchased");
         }
         return true;
-
-
     }
 
+    private async Task GetMySub()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+        if (user == null)
+        {
+            Snackbar.Add("Sorry cannot find your sub", Severity.Error);
+            return;
+        }
+        var sub = await UserService.GetIndividualSubscriptionViewModel(user.RoadTripId);
+        MySub = sub;
+        StateHasChanged();
+    }
 }

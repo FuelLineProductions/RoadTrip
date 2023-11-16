@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RoadTrip.ViewModels;
 using RoadTripDb.Database.Models;
 using RoadTripDb.Repos;
 using RoadTripServices.MiddlewareModels;
@@ -14,12 +15,14 @@ namespace RoadTripServices.Services
         private readonly IHostAppUserRepo _hostUserRepo;
         private readonly IIndividualSubscriptionRepo _individualSubscriptionRepo;
         private readonly IGroupSubscriptionRepo _groupSubscriptionRepo;
+        private readonly ISubscriptionTierRepo _subscriptionTierRepo;
 
-        public UserService(IHostAppUserRepo hostUserRepo, IIndividualSubscriptionRepo individualSubscriptionRepo, IGroupSubscriptionRepo groupSubscriptionRepo)
+        public UserService(IHostAppUserRepo hostUserRepo, IIndividualSubscriptionRepo individualSubscriptionRepo, IGroupSubscriptionRepo groupSubscriptionRepo, ISubscriptionTierRepo subscriptionTierRepo)
         {
             _hostUserRepo = hostUserRepo;
             _individualSubscriptionRepo = individualSubscriptionRepo;
             _groupSubscriptionRepo = groupSubscriptionRepo;
+            _subscriptionTierRepo = subscriptionTierRepo;
         }
 
         /// <inheritdoc />
@@ -68,7 +71,7 @@ namespace RoadTripServices.Services
             // validate host exists
             var host = await _hostUserRepo.GetHostAppUser(newSubscription.Owner);
             ArgumentNullException.ThrowIfNull(host, "host could not be found");
-            
+
             var currentSub = _individualSubscriptionRepo.GetQueryable().FirstOrDefault(sub => sub.Owner.Equals(newSubscription.Owner));
             // if a current subscription does not exist
             if (currentSub == null)
@@ -85,6 +88,21 @@ namespace RoadTripServices.Services
             var updated = await _individualSubscriptionRepo.UpdateAsync(currentSub);
             ArgumentNullException.ThrowIfNull(updated, "Failed to update subscription");
             return updated;
+        }
+
+        /// <inheritdoc/>
+        public async Task<MySubscription> GetIndividualSubscriptionViewModel(Guid ownerId)
+        {
+            var sub = _individualSubscriptionRepo.GetQueryable().FirstOrDefault(x => x.Owner.Equals(ownerId));
+            ArgumentNullException.ThrowIfNull(sub, "Subscription could not be found");
+            var tier = await _subscriptionTierRepo.Get(sub.ActiveSubscriptionTier);
+            ArgumentNullException.ThrowIfNull(tier, "Tier could not be found");
+            return new MySubscription()
+            {
+                OwnerId = ownerId,
+                Expiry = sub.SubscriptionExpiry,
+                TierName = tier.Name
+            };
         }
     }
 
