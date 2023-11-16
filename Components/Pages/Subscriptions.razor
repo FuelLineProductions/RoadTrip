@@ -1,0 +1,129 @@
+﻿@page "/Subscriptions"
+@using RoadTripDb.Database.Models
+@using RoadTripDb.Repos
+@using RoadTripServices.Services
+@inject ISubscriptionTierRepo SubscriptionTierRepo
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IUserService UserService
+@inject IIndividualSubscriptionRepo IndividualSubscriptionRepo
+@inject UserManager<RoadTripUser> UserManager
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h3">Subscriptions</MudText>
+<MudGrid Spacing="5" Justify="Justify.Center">
+@foreach (var tier in SubscriptionTiers)
+{
+    <MudItem>
+        <MudCard Outlined="true" Elevation="1">
+            <MudCardHeader>
+                <MudText Typo="Typo.h4">@tier.Name</MudText>
+                <MudSpacer/>
+                <MudText Typo="Typo.body1">@tier.Description</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList>
+                    <MudListItem>
+                        <MudText Typo="Typo.body1">£@tier.MonthlyCostGbp / month or £@tier.YearlyCostGbp / year</MudText>
+                    </MudListItem>
+                    @if (tier.DiscountGbp > 0)
+                    {
+                        <MudListItem>
+                            <MudText Typo="Typo.body1">Education gets a discount of @(tier.DiscountGbp) per year, making it just @(tier.YearlyCostGbp - tier.DiscountGbp) per year.</MudText>
+                            <MudText Typo="Typo.body2">Contact us to find out more contact@fuellineproductions.co.uk</MudText>
+                        </MudListItem>
+                    }
+                    <MudListItem>
+                        <MudText Typo="Typo.body1">Maximum hosts in this subscription @tier.MaxHosts</MudText>
+                    </MudListItem>
+                    <MudListItem>
+                        <MudText Typo="Typo.body1">Maximum games you can save @tier.MaxGameSaves</MudText>
+                    </MudListItem>
+                    <MudListItem>
+                        <MudText Typo="Typo.body1">Maximum rooms to host guests @tier.MaxRooms</MudText>
+                    </MudListItem>
+                    <MudListItem>
+                        <MudText Typo="Typo.body1">Maximum guests in each room @tier.MaxGuests</MudText>
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+            @if (tier.MonthlyCostGbp > 0)
+            {
+                <AuthorizeView>
+                    <Authorized>
+                        <MudCardActions>
+                            <MudCheckBox @bind-Checked="Yearly" Label="Yearly (checked) (unchecked is monthly)"></MudCheckBox>
+                            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="(() => Purchase(tier))">Purchase Now</MudButton>
+                        </MudCardActions>
+                    </Authorized>
+                    <NotAuthorized>
+                        <MudText>Register or login to purchase</MudText>
+                    </NotAuthorized>
+                </AuthorizeView>
+            }
+
+        </MudCard>
+    </MudItem>
+}
+</MudGrid>
+
+
+@code {
+    List<SubscriptionTier> SubscriptionTiers { get; set; } = new();
+    private bool Yearly { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        SubscriptionTiers = SubscriptionTierRepo.GetQueryable().OrderBy(x=>x.MonthlyCostGbp).ToList();
+        StateHasChanged();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task<bool> Purchase(SubscriptionTier chosen)
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+        if (user == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var currentSub = IndividualSubscriptionRepo.GetQueryable().FirstOrDefault(sub => sub.Owner.Equals(user.RoadTripId));
+            var expiry = Yearly ? DateTime.UtcNow.AddYears(1) : DateTime.UtcNow.AddMonths(1);
+            if (currentSub != null)
+            {
+                currentSub.ActiveSubscriptionTier = chosen.Id;
+                currentSub.SubscriptionExpiry = expiry;
+                await UserService.UpdateIndividualSubscription(currentSub);
+            }
+            else
+            {
+                var newSubscription = new IndividualSubscription()
+                    {
+                        ActiveSubscriptionTier = chosen.Id,
+                        Owner = user.RoadTripId,
+                        IndividualId = Guid.NewGuid(),
+                        SubscriptionExpiry = expiry
+                    };
+                await UserService.UpdateIndividualSubscription(newSubscription);
+            }
+        }
+        catch (ArgumentNullException)
+        {
+            // TODO Log exception
+            Snackbar.Add("Failed to purchase", Severity.Error);
+            return false;
+        }
+        finally
+        {
+            Snackbar.Add("Successfully purchased");
+        }
+        return true;
+
+
+    }
+
+}
