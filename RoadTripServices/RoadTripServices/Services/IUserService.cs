@@ -1,13 +1,8 @@
-﻿using RoadTrip.ViewModels;
-using RoadTripDb.Database.Models;
-using RoadTripServices.MiddlewareModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RoadTrip.RoadTripDb.Database.Models;
+using RoadTrip.RoadTripServices.RoadTripServices.MiddlewareModels;
+using RoadTrip.ViewModels;
 
-namespace RoadTripServices.Services
+namespace RoadTrip.RoadTripServices.RoadTripServices.Services
 {
     public interface IUserService
     {

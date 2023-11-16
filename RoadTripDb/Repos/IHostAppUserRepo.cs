@@ -1,11 +1,6 @@
-﻿using RoadTripDb.Database.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RoadTrip.RoadTripDb.Database.Models;
 
-namespace RoadTripDb.Repos
+namespace RoadTrip.RoadTripDb.Repos
 {
     public interface IHostAppUserRepo : IBaseRepo<HostAppUser>
     {

@@ -10,7 +10,7 @@ using RoadTrip.Data;
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace Microsoft.AspNetCore.Routing
+namespace RoadTrip.Components.Account
 {
     internal static class IdentityComponentsEndpointRouteBuilderExtensions
     {

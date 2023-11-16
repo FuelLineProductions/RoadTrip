@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RoadTripDb.Database;
+﻿using RoadTrip.RoadTripDb.Database;
 
-namespace RoadTripDb.Repos
+namespace RoadTrip.RoadTripDb.Repos
 {
     public class BaseRepo<T>(RoadTripDbContext context) : IBaseRepo<T>
     {

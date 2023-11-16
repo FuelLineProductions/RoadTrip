@@ -5,10 +5,10 @@ using MudBlazor.Services;
 using RoadTrip.Components;
 using RoadTrip.Components.Account;
 using RoadTrip.Data;
-using RoadTripDb.Database;
-using RoadTripDb.Database.Models;
-using RoadTripDb.Repos;
-using RoadTripServices.Services;
+using RoadTrip.RoadTripDb.Database;
+using RoadTrip.RoadTripDb.Database.Models;
+using RoadTrip.RoadTripDb.Repos;
+using RoadTrip.RoadTripServices.RoadTripServices.Services;
 
 namespace RoadTrip
 {

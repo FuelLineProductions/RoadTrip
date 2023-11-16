@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RoadTripDb.Repos
+﻿namespace RoadTrip.RoadTripDb.Repos
 {
     public interface IBaseRepo<T>
     {
@@ -31,7 +25,7 @@ namespace RoadTripDb.Repos
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        Task<ICollection<T>> AddRangeAsync(ICollection<T>  entities);
+        Task<ICollection<T>> AddRangeAsync(ICollection<T> entities);
         /// <summary>
         /// Update a range of entities
         /// </summary>

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RoadTrip.RoadTripDb.Database.Models;
+using RoadTrip.RoadTripDb.Repos;
+using RoadTrip.RoadTripServices.RoadTripServices.MiddlewareModels;
 using RoadTrip.ViewModels;
-using RoadTripDb.Database.Models;
-using RoadTripDb.Repos;
-using RoadTripServices.MiddlewareModels;
 
-namespace RoadTripServices.Services
+namespace RoadTrip.RoadTripServices.RoadTripServices.Services
 {
     public class UserService : IUserService
     {

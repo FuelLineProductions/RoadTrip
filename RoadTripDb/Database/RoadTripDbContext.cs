@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using RoadTripDb.Database.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RoadTrip.RoadTripDb.Database.Models;
 
-namespace RoadTripDb.Database
+namespace RoadTrip.RoadTripDb.Database
 {
     public class RoadTripDbContext(DbContextOptions<RoadTripDbContext> options) : DbContext(options)
     {

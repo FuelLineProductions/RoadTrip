@@ -1,11 +1,6 @@
-﻿using RoadTripDb.Database.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RoadTrip.RoadTripDb.Database.Models;
 
-namespace RoadTripServices.MiddlewareModels
+namespace RoadTrip.RoadTripServices.RoadTripServices.MiddlewareModels
 {
     public class AddNewHostModel
     {
