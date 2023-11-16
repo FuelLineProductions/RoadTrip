@@ -1,11 +1,13 @@
 ﻿@implements IDisposable
+@using System.Security.Claims
 @inherits LayoutComponentBase
 @inject UserManager<RoadTripUser> UserManager
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<MudThemeProvider Theme="Theme.CurrentTheme()"  IsDarkMode="_darkMode"/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudThemeProvider Theme="Theme.CurrentTheme()" IsDarkMode="_darkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <PageTitle>RoadTrip</PageTitle>
 
@@ -18,8 +20,8 @@
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    <MudNavLink Icon="@Icons.Material.Filled.AccountBox" Href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Hello, @UserManager.GetUserAsync(context.User).Result?.DisplayName!
+                    <MudNavLink Icon="@Icons.Material.Filled.AccountBox" Href="Account/Manage" IconColor="Color.Secondary">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span>@PlayerName
                     </MudNavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -58,8 +60,9 @@
     bool _drawerOpen = true;
     bool _darkMode = false;
     string _themeIcon = Icons.Material.Filled.LightMode;
-
+    string PlayerName { get; set; }
     private string? currentUrl;
+
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
@@ -82,6 +85,37 @@
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Not perfect but seems to work ok for now, better than erroring on every second load
+        var playerName = await PlayerNameUpdateAsync();
+        if (PlayerName != playerName)
+        {
+            PlayerName = $"Hello, {playerName}!";
+        }
+        StateHasChanged();
+
+    }
+
+    private async Task<string> PlayerNameUpdateAsync()
+    {
+        var authState = await AuthenticationStateProvider
+        .GetAuthenticationStateAsync();
+        var claim = authState.User;
+
+        if (claim.Identity is not null && claim.Identity.IsAuthenticated)
+        {
+            var user = await UserManager.GetUserAsync(claim);
+            if (user == null)
+            {
+                return "Player";
+            }
+            return user.DisplayName;
+        }
+        return "Player";
+
     }
 
     public void Dispose()

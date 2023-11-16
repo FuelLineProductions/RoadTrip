@@ -6,6 +6,8 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using RoadTrip.Data
+@using RoadTripDb.Database.Models
+@using RoadTripDb.Repos
 
 @inject UserManager<RoadTripUser> UserManager
 @inject IUserStore<RoadTripUser> UserStore
@@ -14,6 +16,7 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject IHostAppUserRepo HostAppUserRepo
 
 <PageTitle>Register</PageTitle>
 
@@ -99,6 +102,14 @@
             identityErrors = result.Errors;
             return;
         }
+
+        await HostAppUserRepo.AddAsync(new HostAppUser()
+            {
+                RoadTripUserId = user.RoadTripId,
+                DisplayName = user.DisplayName,
+                Surname = user.Surname,
+                PrimaryName = user.PrimaryName
+            });
 
         Logger.LogInformation("User created a new account with password.");
 

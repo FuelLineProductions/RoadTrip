@@ -3,11 +3,13 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using RoadTrip.Data
+@using RoadTripDb.Repos
 
 @inject UserManager<RoadTripUser> UserManager
 @inject SignInManager<RoadTripUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject IHostAppUserRepo HostAppUserRepo
 
 <PageTitle>Profile</PageTitle>
 
@@ -81,6 +83,13 @@
 
     private async Task OnValidSubmitAsync()
     {
+
+        var currentUser = await HostAppUserRepo.GetHostAppUser(user.RoadTripId);
+        if (currentUser == null)
+        {
+            RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to find user", HttpContext);
+        }
+
         if (Input.PhoneNumber != phoneNumber)
         {
             var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
@@ -98,6 +107,8 @@
             {
                 RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set surname.", HttpContext);
             }
+            currentUser.Surname = Input.Surname;
+            await HostAppUserRepo.UpdateAsync(currentUser);
         }
 
         if (Input.PrimaryName != primaryName)
@@ -108,6 +119,8 @@
             {
                 RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set primary name.", HttpContext);
             }
+            currentUser.PrimaryName = Input.PrimaryName;
+            await HostAppUserRepo.UpdateAsync(currentUser);
         }
 
         if (Input.DisplayName != displayName)
@@ -118,6 +131,8 @@
             {
                 RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set display name.", HttpContext);
             }
+            currentUser.DisplayName = Input.DisplayName;
+            await HostAppUserRepo.UpdateAsync(currentUser);
         }
 
         await SignInManager.RefreshSignInAsync(user);
