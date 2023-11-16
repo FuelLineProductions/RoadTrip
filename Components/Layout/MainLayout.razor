@@ -1,0 +1,93 @@
+﻿@implements IDisposable
+@inherits LayoutComponentBase
+@inject UserManager<RoadTripUser> UserManager
+@inject NavigationManager NavigationManager
+
+<MudThemeProvider Theme="Theme.CurrentTheme()"  IsDarkMode="_darkMode"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<PageTitle>RoadTrip</PageTitle>
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">RoadTrip</MudText>
+        <MudSpacer />
+        <MudIconButton OnClick="ThemeToggle" Icon="@_themeIcon"></MudIconButton>
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <MudNavLink Icon="@Icons.Material.Filled.AccountBox" Href="Account/Manage">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Hello, @UserManager.GetUserAsync(context.User).Result?.DisplayName!
+                    </MudNavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                        </MudButton>
+                    </form>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <MudNavLink Icon="@Icons.Material.Outlined.AppRegistration" Href="Account/Register">
+                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+                    </MudNavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <MudNavLink Icon="@Icons.Material.Outlined.Login" Href="Account/Login">
+                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+                    </MudNavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+    bool _darkMode = false;
+    string _themeIcon = Icons.Material.Filled.LightMode;
+
+    private string? currentUrl;
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void ThemeToggle()
+    {
+        _darkMode = !_darkMode;
+        _themeIcon = _darkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+}
+
