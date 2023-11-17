@@ -1,0 +1,25 @@
+﻿@using RoadTrip.RoadTripDb.Database.Models
+<MudDialog>
+    <DialogContent>
+        <QuizFullView Quiz="@Quiz" ShowAnswers="@ShowAnswers" ShowQuestions="@ShowQuestions" ShowVehicles="@ShowVehicles" />
+    </DialogContent>
+    <DialogActions>        
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public Quiz? Quiz { get; set; } = null;
+    [Parameter]
+    public bool ShowQuestions { get; set; } = true;
+    [Parameter]
+    public bool ShowAnswers { get; set; } = true;
+    [Parameter]
+    public bool ShowVehicles { get; set; } = true;
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+}
+

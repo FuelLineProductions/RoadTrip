@@ -10,51 +10,57 @@
 @inject UserManager<RoadTripUser> UserManager
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
 
+<MudOverlay Visible="Loading" DarkBackground=true Absolute=true>
+    <MudProgressCircular Indeterminate=true>Loading...</MudProgressCircular>
+</MudOverlay>
 <AuthorizeView>
     <Authorized>
-        <MudText Typo="Typo.h3">Your Quizzes</MudText>
-        <MudButton OnClick="Check" Variant="Variant.Outlined" Color="Color.Tertiary">Refresh</MudButton>
-        @if (MyQuizzes.Any())
-        {
-            <MudTable Items="MyQuizzes" Context="quiz">
-                <HeaderContent>
-                    <MudTd>Title</MudTd>
-                    <MudTd>Description</MudTd>
-                    <MudTd>Details</MudTd>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@quiz.Title</MudTd>
-                        <MudTd>@quiz.Description</MudTd>
-                        <MudTd><MudButton>See More</MudButton></MudTd>
-                    </RowTemplate>
-                </MudTable>
-        }
-        else
-        {
-            <MudText>Looks like you haven't made any quizzes yet</MudText>
-        }
-
-        <MudButton OnClick="AddNewQuiz" Color="Color.Info" Variant="Variant.Filled">Add new quiz</MudButton>
-        @if (MakeNew)
-        {
-            <QuizMaker HostCanAdd="MakeNew" Vehicles="Vehicles"></QuizMaker>
-        }
+        <MudContainer>
+            <MudText Typo="Typo.h3">Your Quizzes</MudText>
+            <MudButton OnClick="Check" Variant="Variant.Outlined" Color="Color.Tertiary">Refresh</MudButton>
+            @if (MyQuizzes.Any() && !Loading)
+            {
+                <MudTable Items="MyQuizzes" Context="quiz">
+                    <HeaderContent>
+                        <MudTd>Title</MudTd>
+                        <MudTd>Description</MudTd>
+                        <MudTd>Details</MudTd>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@quiz.Title</MudTd>
+                            <MudTd>@quiz.Description</MudTd>
+                            <MudTd><MudButton OnClick="(() => OpenPreviewDialogAsync(quiz))" Variant="Variant.Filled" Color="Color.Info">See More</MudButton></MudTd>
+                        </RowTemplate>
+                    </MudTable>
+            }
+            else
+            {
+                <MudText>Looks like you haven't made any quizzes yet</MudText>
+            }
+            <MudButton OnClick="AddNewQuiz" Color="Color.Info" Variant="Variant.Filled">Add new quiz</MudButton>
+            @if (MakeNew)
+            {
+                <QuizMaker HostCanAdd="MakeNew" Vehicles="Vehicles"></QuizMaker>
+            }
+        </MudContainer>
     </Authorized>
     <NotAuthorized>
         <MudText Typo="Typo.h3">Please login to view your quizzes</MudText>
     </NotAuthorized>
 </AuthorizeView>
-
-
 @code {
     private bool MakeNew { get; set; }
     private List<Quiz> MyQuizzes { get; set; } = new();
     private List<Vehicle> Vehicles { get; set; } = new();
     private HubConnection? HubConnection;
-
+    private bool Loading { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        Loading = true;
+        await InvokeAsync(StateHasChanged);
+
         HubConnection = new HubConnectionBuilder()
         .WithUrl(Navigation.ToAbsoluteUri("/QuizHub"))
         .Build();
@@ -67,8 +73,9 @@
 
         HubConnection.On<List<Quiz>>("AllQuizzesForOwner", async quizzes =>
         {
+            Loading = false;
             MyQuizzes = quizzes;
-           await  InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         });
 
         var user = await UserManager.GetUserAsync(userClaim);
@@ -90,16 +97,6 @@
                 });
         await HubConnection.InvokeAsync("GetAllVehicles");
     }
-
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     var authState = await AuthenticationStateProvider
-    //         .GetAuthenticationStateAsync();
-    //     var userClaim = authState.User;
-    //     var user = await UserManager.GetUserAsync(userClaim);
-    //     if (user != null)
-    //         await HubConnection.InvokeAsync("GetAllQuizzesForOwner", user.RoadTripId);
-    // }
 
     private async Task Check()
     {
@@ -133,6 +130,17 @@
         MakeNew = canAdd;
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OpenPreviewDialogAsync(Quiz? quiz)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large };
+        var parameters = new DialogParameters<QuizFullViewDialog>();
+        parameters.Add("Quiz", quiz);
+        parameters.Add("ShowAnswers", true);
+        parameters.Add("ShowQuestions", true);
+        parameters.Add("ShowVehicles", true);
+        DialogService.Show<QuizFullViewDialog>("Preview Quiz", parameters,options);
     }
 
 }

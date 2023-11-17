@@ -68,7 +68,6 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             try
             {
                 ArgumentNullException.ThrowIfNull(quiz, "null not accepted");
-
                 var added = await _quizRepo.AddAsync(quiz);
                 ArgumentNullException.ThrowIfNull(added, "failed to add quiz to Db");
 

@@ -28,8 +28,8 @@ namespace RoadTrip.Hubs
 
         public async Task GetAllQuizzesForOwner(Guid ownerId)
         {
-            var quizzes = await _quizService.GetAllQuizzesForOwner(ownerId);
-            await Clients.Caller.SendAsync("AllQuizzesForOwner", quizzes.ToList());
+            var quizzes = await _quizService.GetAllQuizzesForOwner(ownerId);            
+            await Clients.Caller.SendAsync("AllQuizzesForOwner", quizzes.Count != 0 ? quizzes.ToList() : []);
         }
 
         public async Task CanHostAddNewQuizIndividual(Guid id)
