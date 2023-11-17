@@ -52,7 +52,11 @@
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        @Body
+        <MudContainer Style="width=75%">
+            <MudPaper>
+                @Body
+            </MudPaper>
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 

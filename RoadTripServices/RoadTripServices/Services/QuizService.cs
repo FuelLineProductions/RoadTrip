@@ -76,6 +76,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
                 {
                     foreach (var question in quiz.Questions)
                     {
+                        question.QuizId = added.Id;
                         await _questionRepo.AddAsync(question);
                     }
                 }

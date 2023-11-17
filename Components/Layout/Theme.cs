@@ -20,7 +20,7 @@ namespace RoadTrip.Components.Layout
                 },
                 PaletteDark = new PaletteDark()
                 {
-
+                    Surface= "#2f3631",
                 }
 
             };

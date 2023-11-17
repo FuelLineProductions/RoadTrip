@@ -11,10 +11,10 @@
             <MudText Typo="Typo.body2">@Quiz.Description</MudText>
         </MudCardHeader>
         <MudCardContent>
-            <MudText>@Quiz.MaximumAnswers</MudText>
-            <MudText>@Quiz.MinimumAnswers</MudText>
-            <MudText>@Quiz.TotalDistance</MudText>
-            <MudText>@Quiz.TotalScore</MudText>
+            <MudText>Maximum Answers: @Quiz.MaximumAnswers</MudText>
+            <MudText>Mimimum Answers: @Quiz.MinimumAnswers</MudText>
+            <MudText>Total Distance: @Quiz.TotalDistance</MudText>
+            <MudText>Total Score: @Quiz.TotalScore</MudText>
         </MudCardContent>
         @if (ShowQuestions)
         {
@@ -38,10 +38,10 @@
                             <MudTd>@context.QuestionTitle</MudTd>
                             @if (ShowAnswers)
                             {
-                                <MudTd>@context.PointsReward</MudTd>
-                                <MudTd>@context.FuelRewardCorrectAnswer</MudTd>
-                                <MudTd>@context.FuelRewardIncorrectAnswer</MudTd>
-                                <MudTd>@context.CorrectAnswer</MudTd>
+                                <MudTd>Points Reward @context.PointsReward</MudTd>
+                                <MudTd>Fuel Reward Correct Answer @context.FuelRewardCorrectAnswer</MudTd>
+                                <MudTd>Fuel Reward Incorrect Answer @context.FuelRewardIncorrectAnswer</MudTd>
+                                <MudTd>Correct Answer @context.CorrectAnswer</MudTd>
                             }
                         </RowTemplate>
                     </MudTable>
