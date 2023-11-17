@@ -1,4 +1,6 @@
-﻿namespace RoadTrip.RoadTripDb.Database.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RoadTrip.RoadTripDb.Database.Models
 {
     public class Quiz
     {
@@ -12,7 +14,9 @@
         public int MaximumAnswers { get; set; }
         public bool Active { get; set; }
 
+        [NotMapped]
         public virtual ICollection<Question> Questions { get; set; } = null!;
+        [NotMapped]
         public virtual ICollection<Vehicle> Vehicles { get; set; } = null!;
     }
 }

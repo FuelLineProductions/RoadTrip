@@ -5,16 +5,18 @@ namespace RoadTrip.RoadTripDb.Repos
 {
     public class FuelTypeRepo(RoadTripDbContext context) : BaseRepo<FuelType>(context), IFuelTypeRepo
     {
+        private readonly RoadTripDbContext _context = context;
+
         public async Task<FuelType?> Get(int id)
         {
-            return await Context.FuelTypes.FindAsync(id);
+            return await _context.FuelTypes.FindAsync(id);
         }
 
         public IEnumerable<FuelType?> GetMany(ICollection<int> ids)
         {
             foreach (var id in ids)
             {
-                yield return Context.FuelTypes.Find(id);
+                yield return _context.FuelTypes.Find(id);
             }
         }
     }

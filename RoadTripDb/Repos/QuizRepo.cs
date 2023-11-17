@@ -5,47 +5,54 @@ namespace RoadTrip.RoadTripDb.Repos
 {
     public class QuizRepo(RoadTripDbContext context) : BaseRepo<Quiz>(context), IQuizRepo
     {
+        private readonly RoadTripDbContext _context = context;
         public async Task<Quiz?> Get(Guid id)
         {
-            return await Context.Quizzes.FindAsync(id);
+            return await _context.Quizzes.FindAsync(id);
         }
 
         public IEnumerable<Quiz?> GetMany(ICollection<Guid> ids)
         {
             foreach (var id in ids)
             {
-                yield return Context.Quizzes.Find(id);
+                yield return _context.Quizzes.Find(id);
             }
         }
 
         public IEnumerable<Quiz?> GetManyForOwner(Guid id)
         {
-            return Context.Quizzes.Where(question => question.OwnerId.Equals(id));
+            return _context.Quizzes.Where(question => question.OwnerId.Equals(id));
         }
 
         public async Task AddVehicleToQuiz(Guid quizId, int vehicleId)
         {
-            await Context.QuizVehicles.AddAsync(new QuizVehicles() { QuizId = quizId, VehicleId = vehicleId });
-            await Context.SaveChangesAsync();
+            await _context.QuizVehicles.AddAsync(new QuizVehicles() { QuizId = quizId, VehicleId = vehicleId });
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddRangeVehicleToQuiz(List<QuizVehicles> quizVehicles)
+        {
+            await _context.QuizVehicles.AddRangeAsync(quizVehicles);
+            await _context.SaveChangesAsync();
         }
 
         public IQueryable<Quiz> GetQueryable()
         {
-            return Context.Quizzes;
+            return _context.Quizzes;
         }
 
         public IQueryable<QuizVehicles> GetQuizVehiclesQueryable()
         {
-            return Context.QuizVehicles;
+            return _context.QuizVehicles;
         }
 
         public async Task RemoveVehicleFromQuiz(Guid quizId, int vehicleId)
         {
-            var matches = Context.QuizVehicles.Where(x => x.QuizId.Equals(quizId) && vehicleId.Equals(vehicleId))
+            var matches = _context.QuizVehicles.Where(x => x.QuizId.Equals(quizId) && vehicleId.Equals(vehicleId))
                 .ToList();
 
-            Context.QuizVehicles.RemoveRange(matches);
-            await context.SaveChangesAsync();
+            _context.QuizVehicles.RemoveRange(matches);
+            await _context.SaveChangesAsync();
         }
     }
 }

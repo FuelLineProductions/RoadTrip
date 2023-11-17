@@ -8,6 +8,7 @@ namespace RoadTrip.RoadTripDb.Repos
         IEnumerable<Quiz?> GetMany(ICollection<Guid> ids);
         IEnumerable<Quiz?> GetManyForOwner(Guid id);
         Task AddVehicleToQuiz(Guid quizId, int vehicleId);
+        Task AddRangeVehicleToQuiz(List<QuizVehicles> quizVehicles);
         IQueryable<Quiz> GetQueryable();
         IQueryable<QuizVehicles> GetQuizVehiclesQueryable();
         Task RemoveVehicleFromQuiz(Guid quizId, int vehicleId);

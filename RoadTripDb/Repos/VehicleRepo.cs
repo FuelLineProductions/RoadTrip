@@ -5,16 +5,17 @@ namespace RoadTrip.RoadTripDb.Repos
 {
     public class VehicleRepo(RoadTripDbContext context) : BaseRepo<Vehicle>(context), IVehicleRepo
     {
+        private readonly RoadTripDbContext _context = context;
         /// <inheritdoc />
         public async Task<Vehicle?> Get(int id)
         {
-            return await Context.Vehicles.FindAsync(id);
+            return await _context.Vehicles.FindAsync(id);
         }
 
         /// <inheritdoc />
         public IQueryable<Vehicle> GetAll()
         {
-            return Context.Vehicles;
+            return _context.Vehicles;
         }
     }
 }

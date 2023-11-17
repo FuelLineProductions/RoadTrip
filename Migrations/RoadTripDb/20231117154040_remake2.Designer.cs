@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RoadTrip.RoadTripDb.Database;
 
 #nullable disable
 
-namespace RoadTripDb.Migrations
+namespace RoadTrip.Migrations.RoadTripDb
 {
     [DbContext(typeof(RoadTripDbContext))]
-    partial class RoadTripDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231117154040_remake2")]
+    partial class remake2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,10 +58,6 @@ namespace RoadTripDb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HostsInSubscription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("Owner")
                         .HasColumnType("uniqueidentifier");
 
@@ -87,10 +86,6 @@ namespace RoadTripDb.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PrimaryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoomInvites")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -176,8 +171,6 @@ namespace RoadTripDb.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizId");
-
                     b.ToTable("Questions");
                 });
 
@@ -250,9 +243,6 @@ namespace RoadTripDb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("HostAppUserRoadTripUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("MaxUsers")
                         .HasColumnType("int");
 
@@ -264,8 +254,6 @@ namespace RoadTripDb.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("RoomId");
-
-                    b.HasIndex("HostAppUserRoadTripUserId");
 
                     b.ToTable("Rooms");
                 });
@@ -334,49 +322,9 @@ namespace RoadTripDb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("QuizId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizId");
-
                     b.ToTable("Vehicles");
-                });
-
-            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Question", b =>
-                {
-                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.Quiz", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Room", b =>
-                {
-                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.HostAppUser", null)
-                        .WithMany("OpenRooms")
-                        .HasForeignKey("HostAppUserRoadTripUserId");
-                });
-
-            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Vehicle", b =>
-                {
-                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.Quiz", null)
-                        .WithMany("Vehicles")
-                        .HasForeignKey("QuizId");
-                });
-
-            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.HostAppUser", b =>
-                {
-                    b.Navigation("OpenRooms");
-                });
-
-            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Quiz", b =>
-                {
-                    b.Navigation("Questions");
-
-                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

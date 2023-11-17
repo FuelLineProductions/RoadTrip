@@ -5,16 +5,17 @@ namespace RoadTrip.RoadTripDb.Repos
 {
     public class QuestionRepo(RoadTripDbContext context) : BaseRepo<Question>(context), IQuestionRepo
     {
+        private readonly RoadTripDbContext _context = context;
         public async Task<Question?> Get(int id)
         {
-            return await Context.Questions.FindAsync(id);
+            return await _context.Questions.FindAsync(id);
         }
 
         public IEnumerable<Question?> GetMany(ICollection<int> ids)
         {
             foreach (var id in ids)
             {
-                yield return Context.Questions.Find(id);
+                yield return _context.Questions.Find(id);
             }
         }
 
@@ -23,14 +24,14 @@ namespace RoadTrip.RoadTripDb.Repos
             var questions = new List<Question>();
             foreach (var id in ids)
             {
-                questions.AddRange(Context.Questions.Where(question => question.QuizId.Equals(id)));
+                questions.AddRange(_context.Questions.Where(question => question.QuizId.Equals(id)));
             }
             return questions;
         }
 
         public IQueryable<Question> GetQueryable()
         {
-            return Context.Questions;
+            return _context.Questions;
         }
     }
 }

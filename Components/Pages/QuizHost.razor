@@ -2,15 +2,19 @@
 @using RoadTrip.RoadTripDb.Database.Models
 @using RoadTrip.RoadTripServices.RoadTripServices.Services
 @using RoadTrip.Components.QuizComponents
+@using RoadTrip.RoadTripDb.Repos
+@using Microsoft.Identity.Client
+@using Microsoft.AspNetCore.SignalR.Client
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<RoadTripUser> UserManager
-@inject IQuizService QuizService
-@inject IUserService UserService
 @inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
 <AuthorizeView>
     <Authorized>
         <MudText Typo="Typo.h3">Your Quizzes</MudText>
+        <MudButton OnClick="Check" Variant="Variant.Outlined" Color="Color.Tertiary">Refresh</MudButton>
         @if (MyQuizzes.Any())
         {
             <MudTable Items="MyQuizzes" Context="quiz">
@@ -34,7 +38,7 @@
         <MudButton OnClick="AddNewQuiz" Color="Color.Info" Variant="Variant.Filled">Add new quiz</MudButton>
         @if (MakeNew)
         {
-            <QuizMaker HostCanAdd="MakeNew"></QuizMaker>
+            <QuizMaker HostCanAdd="MakeNew" Vehicles="Vehicles"></QuizMaker>
         }
     </Authorized>
     <NotAuthorized>
@@ -46,29 +50,81 @@
 @code {
     private bool MakeNew { get; set; }
     private List<Quiz> MyQuizzes { get; set; } = new();
+    private List<Vehicle> Vehicles { get; set; } = new();
+    private HubConnection? HubConnection;
 
     protected override async Task OnInitializedAsync()
     {
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(Navigation.ToAbsoluteUri("/QuizHub"))
+        .Build();
+
+        await HubConnection.StartAsync();
+
         var authState = await AuthenticationStateProvider
             .GetAuthenticationStateAsync();
         var userClaim = authState.User;
+
+        HubConnection.On<List<Quiz>>("AllQuizzesForOwner", async quizzes =>
+        {
+            MyQuizzes = quizzes;
+           await  InvokeAsync(StateHasChanged);
+        });
+
         var user = await UserManager.GetUserAsync(userClaim);
         if (user != null)
         {
-            var quizzes = await QuizService.GetAllQuizzesForOwner(user.RoadTripId);
-            MyQuizzes = quizzes.ToList();
-            await InvokeAsync(StateHasChanged);
+            await HubConnection.InvokeAsync("GetAllQuizzesForOwner", user.RoadTripId);
         }
+
+        HubConnection.On<bool>("CanHostAddNewQuizIndividualResult", async canAdd =>
+       {
+           await CanAddCheck(canAdd);
+           await InvokeAsync(StateHasChanged); ;
+       });
+
+        HubConnection.On<List<Vehicle>>("AllVehicles", async vehicles =>
+                {
+                    Vehicles = vehicles;
+                    await InvokeAsync(StateHasChanged);
+                });
+        await HubConnection.InvokeAsync("GetAllVehicles");
     }
 
-    private async Task AddNewQuiz()
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     var authState = await AuthenticationStateProvider
+    //         .GetAuthenticationStateAsync();
+    //     var userClaim = authState.User;
+    //     var user = await UserManager.GetUserAsync(userClaim);
+    //     if (user != null)
+    //         await HubConnection.InvokeAsync("GetAllQuizzesForOwner", user.RoadTripId);
+    // }
+
+    private async Task Check()
     {
         var authState = await AuthenticationStateProvider
         .GetAuthenticationStateAsync();
         var userClaim = authState.User;
         var user = await UserManager.GetUserAsync(userClaim);
-        var canAdd = await UserService.CanHostAddNewQuizIndividual(user.RoadTripId);
+        if (user != null)
+            await HubConnection.InvokeAsync("GetAllQuizzesForOwner", user.RoadTripId);
+    }
 
+    private async Task AddNewQuiz()
+    {
+        await Check();
+        var authState = await AuthenticationStateProvider
+        .GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+        var canAdd = HubConnection.InvokeAsync("CanHostAddNewQuizIndividual", user.RoadTripId);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CanAddCheck(bool canAdd)
+    {
         if (!canAdd)
         {
             Snackbar.Add("Sorry you can't add more quizzes on your current sub", Severity.Error);
@@ -76,7 +132,7 @@
 
         MakeNew = canAdd;
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
 }

@@ -5,10 +5,11 @@ namespace RoadTrip.RoadTripDb.Repos
 {
     public class HostAppUserRepo(RoadTripDbContext context) : BaseRepo<HostAppUser>(context), IHostAppUserRepo
     {
+        private readonly RoadTripDbContext _context = context;
         /// <inheritdoc />
         public async Task<HostAppUser?> GetHostAppUser(Guid id)
         {
-            return await Context.HostAppUsers.FindAsync(id);
+            return await _context.HostAppUsers.FindAsync(id);
         }
 
         /// <inheritdoc />
@@ -16,7 +17,7 @@ namespace RoadTrip.RoadTripDb.Repos
         {
             foreach (var id in ids)
             {
-                yield return Context.HostAppUsers.Find(id);
+                yield return _context.HostAppUsers.Find(id);
             }
         }
 

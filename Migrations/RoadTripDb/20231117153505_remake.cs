@@ -1,15 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RoadTripDb.Migrations
+namespace RoadTrip.Migrations.RoadTripDb
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class remake : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "FuelTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CostPerQuestion = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FuelTypes", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "GroupSubscriptions",
                 columns: table => new
@@ -72,7 +87,40 @@ namespace RoadTripDb.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionTier",
+                name: "QuizVehicles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuizId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VehicleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizVehicles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quizzes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalScore = table.Column<int>(type: "int", nullable: false),
+                    TotalDistance = table.Column<int>(type: "int", nullable: false),
+                    MinimumAnswers = table.Column<int>(type: "int", nullable: false),
+                    MaximumAnswers = table.Column<int>(type: "int", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quizzes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionTiers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -114,10 +162,77 @@ namespace RoadTripDb.Migrations
                         principalColumn: "RoadTripUserId");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Questions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuizId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    QuestionTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CorrectAnswer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FuelRewardCorrectAnswer = table.Column<int>(type: "int", nullable: false),
+                    FuelRewardIncorrectAnswer = table.Column<int>(type: "int", nullable: false),
+                    PointsReward = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Questions_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Vehicles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FuelCapacity = table.Column<int>(type: "int", nullable: false),
+                    FuelTypeId = table.Column<int>(type: "int", nullable: false),
+                    QuizId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vehicles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vehicles_FuelTypes_FuelTypeId",
+                        column: x => x.FuelTypeId,
+                        principalTable: "FuelTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Vehicles_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Questions_QuizId",
+                table: "Questions",
+                column: "QuizId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_HostAppUserRoadTripUserId",
                 table: "Rooms",
                 column: "HostAppUserRoadTripUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_FuelTypeId",
+                table: "Vehicles",
+                column: "FuelTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_QuizId",
+                table: "Vehicles",
+                column: "QuizId");
         }
 
         /// <inheritdoc />
@@ -133,13 +248,28 @@ namespace RoadTripDb.Migrations
                 name: "IndividualSubscriptions");
 
             migrationBuilder.DropTable(
+                name: "Questions");
+
+            migrationBuilder.DropTable(
+                name: "QuizVehicles");
+
+            migrationBuilder.DropTable(
                 name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "SubscriptionTier");
+                name: "SubscriptionTiers");
+
+            migrationBuilder.DropTable(
+                name: "Vehicles");
 
             migrationBuilder.DropTable(
                 name: "HostAppUsers");
+
+            migrationBuilder.DropTable(
+                name: "FuelTypes");
+
+            migrationBuilder.DropTable(
+                name: "Quizzes");
         }
     }
 }

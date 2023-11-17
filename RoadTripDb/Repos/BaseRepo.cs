@@ -4,14 +4,14 @@ namespace RoadTrip.RoadTripDb.Repos
 {
     public class BaseRepo<T>(RoadTripDbContext context) : IBaseRepo<T>
     {
-        public readonly RoadTripDbContext Context = context;
+        private readonly RoadTripDbContext _context = context;
 
         /// <inheritdoc/>
         public async Task<T> AddAsync(T entity)
         {
             ArgumentNullException.ThrowIfNull(entity);
-            await Context.AddAsync(entity);
-            await Context.SaveChangesAsync();
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
@@ -20,8 +20,8 @@ namespace RoadTrip.RoadTripDb.Repos
         {
             ArgumentNullException.ThrowIfNull(entity);
 
-            Context.Remove(entity);
-            await Context.SaveChangesAsync();
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -29,8 +29,8 @@ namespace RoadTrip.RoadTripDb.Repos
         {
             ArgumentNullException.ThrowIfNull(entity);
 
-            Context.Update(entity);
-            await Context.SaveChangesAsync();
+            _context.Update(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
@@ -39,8 +39,8 @@ namespace RoadTrip.RoadTripDb.Repos
         {
             ArgumentNullException.ThrowIfNull(entities);
 
-            Context.RemoveRange(entities);
-            await Context.SaveChangesAsync();
+            _context.RemoveRange(entities);
+            await _context.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -48,8 +48,8 @@ namespace RoadTrip.RoadTripDb.Repos
         {
             ArgumentNullException.ThrowIfNull(entities);
 
-            Context.UpdateRange(entities);
-            await Context.SaveChangesAsync();
+            _context.UpdateRange(entities);
+            await _context.SaveChangesAsync();
             return entities;
         }
 
@@ -58,8 +58,8 @@ namespace RoadTrip.RoadTripDb.Repos
         {
             ArgumentNullException.ThrowIfNull(entities);
 
-            Context.AddRange(entities);
-            await Context.SaveChangesAsync();
+            _context.AddRange(entities);
+            await _context.SaveChangesAsync();
             return entities;
         }
     }

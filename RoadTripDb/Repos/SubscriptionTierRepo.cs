@@ -5,22 +5,23 @@ namespace RoadTrip.RoadTripDb.Repos
 {
     public class SubscriptionTierRepo(RoadTripDbContext context) : BaseRepo<SubscriptionTier>(context), ISubscriptionTierRepo
     {
+        private readonly RoadTripDbContext _context = context;
         public async Task<SubscriptionTier?> Get(int id)
         {
-            return await Context.SubscriptionTiers.FindAsync(id);
+            return await _context.SubscriptionTiers.FindAsync(id);
         }
 
         public IEnumerable<SubscriptionTier?> GetMany(ICollection<int> ids)
         {
             foreach (var id in ids)
             {
-                yield return Context.SubscriptionTiers.Find(id);
+                yield return _context.SubscriptionTiers.Find(id);
             }
         }
 
         public IQueryable<SubscriptionTier> GetQueryable()
         {
-            return Context.SubscriptionTiers;
+            return _context.SubscriptionTiers;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@using RoadTrip.RoadTripDb.Database.Models
 @using RoadTrip.RoadTripDb.Repos
-@inject IFuelTypeRepo FuelTypeRepo
+@* @inject IFuelTypeRepo FuelTypeRepo *@
 
 @if (Quiz != null)
 {
@@ -92,14 +92,14 @@
     protected override async Task OnParametersSetAsync()
     {
 
-        if (Quiz != null && Quiz.Vehicles != null && Quiz.Vehicles.Any())
-        {
-            foreach (var vehicle in Quiz.Vehicles)
-            {
-                vehicle.FuelType = await FuelTypeRepo.Get(vehicle.FuelTypeId);
-            }
-            await InvokeAsync(StateHasChanged);
-        }
+        // if (Quiz != null && Quiz.Vehicles != null && Quiz.Vehicles.Any())
+        // {
+        //     foreach (var vehicle in Quiz.Vehicles)
+        //     {
+        //         vehicle.FuelType = await FuelTypeRepo.Get(vehicle.FuelTypeId);
+        //     }
+        //     await InvokeAsync(StateHasChanged);
+        // }
     }
 
 }

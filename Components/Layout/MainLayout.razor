@@ -21,7 +21,7 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <MudNavLink Icon="@Icons.Material.Filled.AccountBox" Href="Account/Manage" IconColor="Color.Secondary">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span>@PlayerName
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span>@context.User.Identity?.Name
                     </MudNavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -60,7 +60,6 @@
     bool _drawerOpen = true;
     bool _darkMode = false;
     string _themeIcon = Icons.Material.Filled.LightMode;
-    string PlayerName { get; set; }
     private string? currentUrl;
 
     void DrawerToggle()
@@ -85,18 +84,6 @@
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // Not perfect but seems to work ok for now, better than erroring on every second load
-        var playerName = await PlayerNameUpdateAsync();
-        if (PlayerName != playerName)
-        {
-            PlayerName = $"Hello, {playerName}!";
-        }
-        StateHasChanged();
-
     }
 
     private async Task<string> PlayerNameUpdateAsync()

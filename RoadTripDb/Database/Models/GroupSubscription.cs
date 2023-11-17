@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RoadTrip.RoadTripDb.Database.Models
 {
@@ -7,6 +8,8 @@ namespace RoadTrip.RoadTripDb.Database.Models
         [Key]
         public Guid GroupId { get; set; }
         public string GroupName { get; set; }
-        public ICollection<Guid> HostsInSubscription { get; set; }
+
+        [NotMapped]
+        public virtual ICollection<Guid> HostsInSubscription { get; set; }
     }
 }

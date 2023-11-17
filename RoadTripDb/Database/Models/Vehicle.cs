@@ -1,4 +1,6 @@
-﻿namespace RoadTrip.RoadTripDb.Database.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RoadTrip.RoadTripDb.Database.Models
 {
     public class Vehicle
     {
@@ -8,6 +10,7 @@
         public int FuelCapacity { get; set; }
         public int FuelTypeId { get; set; }
 
+        [NotMapped]
         public virtual FuelType? FuelType { get; set; } = null!;
     }
 }

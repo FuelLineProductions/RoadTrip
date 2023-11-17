@@ -1,13 +1,12 @@
-﻿@using RoadTrip.RoadTripDb.Database.Models
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using RoadTrip.RoadTripDb.Database.Models
 @using RoadTrip.RoadTripDb.Repos
 @using Microsoft.EntityFrameworkCore
 @using RoadTrip.RoadTripServices.RoadTripServices.Services
-@inject IVehicleRepo VehicleRepo
-@inject IQuizService QuizService
 @inject ISnackbar Snackbar
-@inject IFuelTypeRepo FuelTypeRepo
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<RoadTripUser> UserManager
+@inject NavigationManager Navigation
 
 <MudPaper Outlined="true" Elevation="1">
     @if (HostCanAdd)
@@ -67,27 +66,28 @@
     public bool HostCanAdd { get; set; }
     private Quiz? Quiz { get; set; } = null;
     private List<Question> Questions { get; set; } = new List<Question>();
-    private List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+    [Parameter]
+    public List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     private List<Vehicle> SelectedVehicles { get; set; } = new List<Vehicle>();
+    private HubConnection HubConnection;
 
     protected override async Task OnInitializedAsync()
     {
-        var vehicles = await VehicleRepo.GetAll().ToListAsync();
-        foreach (var vehicle in vehicles)
-        {
-            vehicle.FuelType = await FuelTypeRepo.Get(vehicle.FuelTypeId);
-        }
-        StateHasChanged();
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(Navigation.ToAbsoluteUri("/QuizHub"))
+        .Build();
+
+        await HubConnection.StartAsync();
+
+        HubConnection.On<bool>("AddQuizSuccess", (success) =>
+       {
+           Snackbar.Add(success ? "Successfully added quiz" : "Failed to add quiz", success ? Severity.Success : Severity.Error);
+       });
+
+        Quiz = new Quiz();
+        await InvokeAsync(StateHasChanged);
     }
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Quiz = new Quiz();
-        }
-        return base.OnAfterRenderAsync(firstRender);
-    }
 
     private async Task AddNewQuiz()
     {
@@ -99,8 +99,7 @@
         Quiz.OwnerId = user.RoadTripId;
         Quiz.Questions = Questions;
         Quiz.Vehicles = SelectedVehicles;
-        var success = await QuizService.AddQuiz(Quiz);
-        var s = success ? Snackbar.Add("Successfully Added Quiz", Severity.Success) : Snackbar.Add("Failed to added quiz", Severity.Error);
+        await HubConnection.InvokeAsync("AddQuiz", Quiz);
     }
 
     private void AddNewQuestion()

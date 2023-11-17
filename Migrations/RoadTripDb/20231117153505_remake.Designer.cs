@@ -9,11 +9,11 @@ using RoadTrip.RoadTripDb.Database;
 
 #nullable disable
 
-namespace RoadTripDb.Migrations
+namespace RoadTrip.Migrations.RoadTripDb
 {
     [DbContext(typeof(RoadTripDbContext))]
-    [Migration("20231116172603_Quizzes1")]
-    partial class Quizzes1
+    [Migration("20231117153505_remake")]
+    partial class remake
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace RoadTripDb.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.FuelType", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.FuelType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("FuelTypes");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.GroupSubscription", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.GroupSubscription", b =>
                 {
                     b.Property<Guid>("GroupId")
                         .ValueGeneratedOnAdd()
@@ -73,7 +73,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("GroupSubscriptions");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.GuestAppUser", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.GuestAppUser", b =>
                 {
                     b.Property<Guid>("GuestId")
                         .ValueGeneratedOnAdd()
@@ -106,7 +106,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("GuestAppUsers");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.HostAppUser", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.HostAppUser", b =>
                 {
                     b.Property<Guid>("RoadTripUserId")
                         .ValueGeneratedOnAdd()
@@ -129,7 +129,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("HostAppUsers");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.IndividualSubscription", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.IndividualSubscription", b =>
                 {
                     b.Property<Guid>("IndividualId")
                         .ValueGeneratedOnAdd()
@@ -149,7 +149,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("IndividualSubscriptions");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Question", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Question", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,11 +184,14 @@ namespace RoadTripDb.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Quiz", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Quiz", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -218,7 +221,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("Quizzes");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.QuizVechicles", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.QuizVehicles", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -229,15 +232,15 @@ namespace RoadTripDb.Migrations
                     b.Property<Guid>("QuizId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("VechicleId")
+                    b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("QuizVechicles");
+                    b.ToTable("QuizVehicles");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Room", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Room", b =>
                 {
                     b.Property<Guid>("RoomId")
                         .ValueGeneratedOnAdd()
@@ -270,7 +273,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.SubscriptionTier", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.SubscriptionTier", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -312,7 +315,7 @@ namespace RoadTripDb.Migrations
                     b.ToTable("SubscriptionTiers");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Vehicle", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Vehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -339,40 +342,50 @@ namespace RoadTripDb.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FuelTypeId");
+
                     b.HasIndex("QuizId");
 
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Question", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Question", b =>
                 {
-                    b.HasOne("RoadTripDb.Database.Models.Quiz", null)
+                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.Quiz", null)
                         .WithMany("Questions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Room", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Room", b =>
                 {
-                    b.HasOne("RoadTripDb.Database.Models.HostAppUser", null)
+                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.HostAppUser", null)
                         .WithMany("OpenRooms")
                         .HasForeignKey("HostAppUserRoadTripUserId");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Vehicle", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Vehicle", b =>
                 {
-                    b.HasOne("RoadTripDb.Database.Models.Quiz", null)
+                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.FuelType", "FuelType")
+                        .WithMany()
+                        .HasForeignKey("FuelTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.Quiz", null)
                         .WithMany("Vehicles")
                         .HasForeignKey("QuizId");
+
+                    b.Navigation("FuelType");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.HostAppUser", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.HostAppUser", b =>
                 {
                     b.Navigation("OpenRooms");
                 });
 
-            modelBuilder.Entity("RoadTripDb.Database.Models.Quiz", b =>
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.Quiz", b =>
                 {
                     b.Navigation("Questions");
 
