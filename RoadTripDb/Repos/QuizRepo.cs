@@ -28,5 +28,24 @@ namespace RoadTrip.RoadTripDb.Repos
             await Context.QuizVehicles.AddAsync(new QuizVehicles() { QuizId = quizId, VehicleId = vehicleId });
             await Context.SaveChangesAsync();
         }
+
+        public IQueryable<Quiz> GetQueryable()
+        {
+            return Context.Quizzes;
+        }
+
+        public IQueryable<QuizVehicles> GetQuizVehiclesQueryable()
+        {
+            return Context.QuizVehicles;
+        }
+
+        public async Task RemoveVehicleFromQuiz(Guid quizId, int vehicleId)
+        {
+            var matches = Context.QuizVehicles.Where(x => x.QuizId.Equals(quizId) && vehicleId.Equals(vehicleId))
+                .ToList();
+
+            Context.QuizVehicles.RemoveRange(matches);
+            await context.SaveChangesAsync();
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace RoadTrip.RoadTripDb.Repos
         Task<Question?> Get(int id);
         IEnumerable<Question?> GetMany(ICollection<int> ids);
         IEnumerable<Question?> GetMany(ICollection<Guid> ids);
+        IQueryable<Question> GetQueryable();
     }
 }

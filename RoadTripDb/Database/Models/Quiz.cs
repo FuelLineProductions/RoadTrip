@@ -10,6 +10,7 @@
         public int TotalDistance { get; set; }
         public int MinimumAnswers { get; set; }
         public int MaximumAnswers { get; set; }
+        public bool Active { get; set; }
 
         public virtual ICollection<Question> Questions { get; set; } = null!;
         public virtual ICollection<Vehicle> Vehicles { get; set; } = null!;

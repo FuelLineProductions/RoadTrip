@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RoadTrip.RoadTripDb.Database;
 
@@ -11,9 +12,11 @@ using RoadTrip.RoadTripDb.Database;
 namespace RoadTripDb.Migrations
 {
     [DbContext(typeof(RoadTripDbContext))]
-    partial class RoadTripDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231117111723_ActiveQuiz")]
+    partial class ActiveQuiz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

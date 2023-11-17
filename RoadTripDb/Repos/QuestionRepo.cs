@@ -27,5 +27,10 @@ namespace RoadTrip.RoadTripDb.Repos
             }
             return questions;
         }
+
+        public IQueryable<Question> GetQueryable()
+        {
+            return Context.Questions;
+        }
     }
 }
