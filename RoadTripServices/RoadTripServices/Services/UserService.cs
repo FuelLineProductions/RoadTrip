@@ -11,13 +11,15 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         private readonly IIndividualSubscriptionRepo _individualSubscriptionRepo;
         private readonly IGroupSubscriptionRepo _groupSubscriptionRepo;
         private readonly ISubscriptionTierRepo _subscriptionTierRepo;
+        private readonly IQuizRepo _quizRepo;
 
-        public UserService(IHostAppUserRepo hostUserRepo, IIndividualSubscriptionRepo individualSubscriptionRepo, IGroupSubscriptionRepo groupSubscriptionRepo, ISubscriptionTierRepo subscriptionTierRepo)
+        public UserService(IHostAppUserRepo hostUserRepo, IIndividualSubscriptionRepo individualSubscriptionRepo, IGroupSubscriptionRepo groupSubscriptionRepo, ISubscriptionTierRepo subscriptionTierRepo, IQuizRepo quizRepo)
         {
             _hostUserRepo = hostUserRepo;
             _individualSubscriptionRepo = individualSubscriptionRepo;
             _groupSubscriptionRepo = groupSubscriptionRepo;
             _subscriptionTierRepo = subscriptionTierRepo;
+            _quizRepo = quizRepo;
         }
 
         /// <inheritdoc />
@@ -98,6 +100,26 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
                 Expiry = sub.SubscriptionExpiry,
                 TierName = tier.Name
             };
+        }
+
+        // TODO: Add group functionality
+        /// <inheritdoc />
+        public async Task<bool> CanHostAddNewQuizIndividual(Guid hostId)
+        {
+            var sub = _individualSubscriptionRepo.GetQueryable().FirstOrDefault(x => x.Owner.Equals(hostId));
+            if (sub == null)
+            {
+                return false;
+            }
+
+            var tier = await _subscriptionTierRepo.Get(sub.ActiveSubscriptionTier);
+            if (tier == null)
+            {
+                return false;
+            }
+
+            var quizzes = _quizRepo.GetManyForOwner(hostId);
+            return quizzes.Count() <= tier.MaxGameSaves;
         }
     }
 

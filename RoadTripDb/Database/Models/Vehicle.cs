@@ -7,5 +7,7 @@
         public string Description { get; set; } = null!;
         public int FuelCapacity { get; set; }
         public int FuelTypeId { get; set; }
+
+        public virtual FuelType? FuelType { get; set; } = null!;
     }
 }

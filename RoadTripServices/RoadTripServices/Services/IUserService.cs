@@ -25,5 +25,11 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         /// <param name="ownerId"></param>
         /// <returns></returns>
         Task<MySubscription> GetIndividualSubscriptionViewModel(Guid ownerId);
+        /// <summary>
+        /// Gets whether the host can add new quizzes based on their sub tier
+        /// </summary>
+        /// <param name="hostId"></param>
+        /// <returns></returns>
+        Task<bool> CanHostAddNewQuizIndividual(Guid hostId);
     }
 }

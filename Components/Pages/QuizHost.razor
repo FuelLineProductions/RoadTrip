@@ -1,0 +1,82 @@
+﻿@page "/MyQuizzes"
+@using RoadTrip.RoadTripDb.Database.Models
+@using RoadTrip.RoadTripServices.RoadTripServices.Services
+@using RoadTrip.Components.QuizComponents
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<RoadTripUser> UserManager
+@inject IQuizService QuizService
+@inject IUserService UserService
+@inject ISnackbar Snackbar
+<AuthorizeView>
+    <Authorized>
+        <MudText Typo="Typo.h3">Your Quizzes</MudText>
+        @if (MyQuizzes.Any())
+        {
+            <MudTable Items="MyQuizzes" Context="quiz">
+                <HeaderContent>
+                    <MudTd>Title</MudTd>
+                    <MudTd>Description</MudTd>
+                    <MudTd>Details</MudTd>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@quiz.Title</MudTd>
+                        <MudTd>@quiz.Description</MudTd>
+                        <MudTd><MudButton>See More</MudButton></MudTd>
+                    </RowTemplate>
+                </MudTable>
+        }
+        else
+        {
+            <MudText>Looks like you haven't made any quizzes yet</MudText>
+        }
+
+        <MudButton OnClick="AddNewQuiz" Color="Color.Info" Variant="Variant.Filled">Add new quiz</MudButton>
+        @if (MakeNew)
+        {
+            <QuizMaker HostCanAdd="MakeNew"></QuizMaker>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <MudText Typo="Typo.h3">Please login to view your quizzes</MudText>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private bool MakeNew { get; set; }
+    private List<Quiz> MyQuizzes { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+        if (user != null)
+        {
+            var quizzes = await QuizService.GetAllQuizzesForOwner(user.RoadTripId);
+            MyQuizzes = quizzes.ToList();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task AddNewQuiz()
+    {
+        var authState = await AuthenticationStateProvider
+        .GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+        var canAdd = await UserService.CanHostAddNewQuizIndividual(user.RoadTripId);
+
+        if (!canAdd)
+        {
+            Snackbar.Add("Sorry you can't add more quizzes on your current sub", Severity.Error);
+        }
+
+        MakeNew = canAdd;
+
+        StateHasChanged();
+    }
+
+}

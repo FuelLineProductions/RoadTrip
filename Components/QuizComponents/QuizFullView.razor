@@ -1,0 +1,105 @@
+﻿@using RoadTrip.RoadTripDb.Database.Models
+@using RoadTrip.RoadTripDb.Repos
+@inject IFuelTypeRepo FuelTypeRepo
+
+@if (Quiz != null)
+{
+    <MudCard Outlined="true" Elevation="3">
+        <MudCardHeader>
+            <MudText Typo="Typo.h2">@Quiz.Title</MudText>
+            <MudSpacer/>
+            <MudText Typo="Typo.body2">@Quiz.Description</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText>@Quiz.MaximumAnswers</MudText>
+            <MudText>@Quiz.MinimumAnswers</MudText>
+            <MudText>@Quiz.TotalDistance</MudText>
+            <MudText>@Quiz.TotalScore</MudText>
+        </MudCardContent>
+        @if (ShowQuestions)
+        {
+            <MudCard Outlined="true" Elevation="5">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h3">Questions</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable Items="@Quiz.Questions">
+                        <HeaderContent>
+                            <MudTh>Question Title</MudTh>
+                            @if (ShowAnswers)
+                            {
+                                <MudTh>Points Reward</MudTh>
+                                <MudTh>Fuel reward on correct answer</MudTh>
+                                <MudTh>Fuel reward on incorrect answer</MudTh>
+                                <MudTh>The Correct Answer</MudTh>
+                            }
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.QuestionTitle</MudTd>
+                            @if (ShowAnswers)
+                            {
+                                <MudTd>@context.PointsReward</MudTd>
+                                <MudTd>@context.FuelRewardCorrectAnswer</MudTd>
+                                <MudTd>@context.FuelRewardIncorrectAnswer</MudTd>
+                                <MudTd>@context.CorrectAnswer</MudTd>
+                            }
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        }
+        @if (ShowVehicles)
+        {
+            <MudCard Outlined="true" Elevation="5">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h3"> Vehicles</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable Items="Quiz.Vehicles">
+                        <HeaderContent>
+                            <MudTh>Vehicle Name</MudTh>
+                            <MudTh>Description</MudTh>
+                            <MudTh>Fuel Capacity</MudTh>
+                            <MudTh>Fuel Type Name</MudTh>
+                            <MudTh>Cost in fuel per question</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.Name</MudTd>
+                            <MudTd>@context.Description</MudTd>
+                            <MudTd>@context.FuelCapacity</MudTd>
+                            <MudTd>@(context.FuelType?.Name ?? "Unknown")</MudTd>
+                            <MudTd>@(context.FuelType?.CostPerQuestion ?? 0)</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        }
+    </MudCard>
+}
+@code {
+
+    [Parameter]
+    public Quiz? Quiz { get; set; } = new();
+
+    [Parameter]
+    public bool ShowQuestions { get; set; } = true;
+    [Parameter]
+    public bool ShowAnswers { get; set; } = true;
+
+    [Parameter]
+    public bool ShowVehicles { get; set; } = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (Quiz != null && Quiz.Vehicles != null && Quiz.Vehicles.Any())
+        {
+            foreach (var vehicle in Quiz.Vehicles)
+            {
+                vehicle.FuelType = await FuelTypeRepo.Get(vehicle.FuelTypeId);
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+}
