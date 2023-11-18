@@ -31,7 +31,9 @@
                     <RowTemplate>
                         <MudTd>@quiz.Title</MudTd>
                             <MudTd>@quiz.Description</MudTd>
-                            <MudTd><MudButton OnClick="(() => OpenPreviewDialogAsync(quiz))" Variant="Variant.Filled" Color="Color.Info">See More</MudButton></MudTd>
+                            <MudTd>
+                                <MudButton OnClick="(() => OpenPreviewDialogAsync(quiz))" Variant="Variant.Filled" Color="Color.Info">See More</MudButton>
+                            </MudTd>
                         </RowTemplate>
                     </MudTable>
             }
@@ -39,11 +41,7 @@
             {
                 <MudText>Looks like you haven't made any quizzes yet</MudText>
             }
-            <MudButton OnClick="AddNewQuiz" Color="Color.Info" Variant="Variant.Filled">Add new quiz</MudButton>
-            @if (MakeNew)
-            {
-                <QuizMaker HostCanAdd="MakeNew" Vehicles="Vehicles"></QuizMaker>
-            }
+            <MudButton OnClick="(() => OpenAddNewDialogAsync())" Color="Color.Info" Variant="Variant.Filled">Add new quiz</MudButton>
         </MudContainer>
     </Authorized>
     <NotAuthorized>
@@ -51,11 +49,12 @@
     </NotAuthorized>
 </AuthorizeView>
 @code {
-    private bool MakeNew { get; set; }
     private List<Quiz> MyQuizzes { get; set; } = new();
     private List<Vehicle> Vehicles { get; set; } = new();
     private HubConnection? HubConnection;
     private bool Loading { get; set; }
+    private bool HostCanAdd { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         Loading = true;
@@ -85,17 +84,22 @@
         }
 
         HubConnection.On<bool>("CanHostAddNewQuizIndividualResult", async canAdd =>
-       {
-           await CanAddCheck(canAdd);
-           await InvokeAsync(StateHasChanged); ;
-       });
+        {
+            if (!canAdd)
+            {
+                Snackbar.Add("Sorry you can't add more quizzes on your current sub", Severity.Error);
+            }
+            HostCanAdd = canAdd;
+            await InvokeAsync(StateHasChanged);
+        });
 
         HubConnection.On<List<Vehicle>>("AllVehicles", async vehicles =>
-                {
-                    Vehicles = vehicles;
-                    await InvokeAsync(StateHasChanged);
-                });
+                 {
+                     Vehicles = vehicles;
+                     await InvokeAsync(StateHasChanged);
+                 });
         await HubConnection.InvokeAsync("GetAllVehicles");
+        await AddNewQuiz();
     }
 
     private async Task Check()
@@ -104,7 +108,7 @@
         .GetAuthenticationStateAsync();
         var userClaim = authState.User;
         var user = await UserManager.GetUserAsync(userClaim);
-        if (user != null)
+        if (user != null && HubConnection != null)
             await HubConnection.InvokeAsync("GetAllQuizzesForOwner", user.RoadTripId);
     }
 
@@ -115,32 +119,31 @@
         .GetAuthenticationStateAsync();
         var userClaim = authState.User;
         var user = await UserManager.GetUserAsync(userClaim);
-        var canAdd = HubConnection.InvokeAsync("CanHostAddNewQuizIndividual", user.RoadTripId);
+        if (user != null && HubConnection != null)
+            await HubConnection.InvokeAsync("CanHostAddNewQuizIndividual", user.RoadTripId);
 
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task CanAddCheck(bool canAdd)
-    {
-        if (!canAdd)
-        {
-            Snackbar.Add("Sorry you can't add more quizzes on your current sub", Severity.Error);
-        }
-
-        MakeNew = canAdd;
-
-        await InvokeAsync(StateHasChanged);
-    }
 
     private async Task OpenPreviewDialogAsync(Quiz? quiz)
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.False };
         var parameters = new DialogParameters<QuizFullViewDialog>();
         parameters.Add("Quiz", quiz);
         parameters.Add("ShowAnswers", true);
         parameters.Add("ShowQuestions", true);
         parameters.Add("ShowVehicles", true);
-        DialogService.Show<QuizFullViewDialog>("Preview Quiz", parameters,options);
+        DialogService.Show<QuizFullViewDialog>("Preview Quiz", parameters, options);
+    }
+
+    private async Task OpenAddNewDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.False };
+        var parameters = new DialogParameters<QuizMakerDialog>();
+        parameters.Add("HostCanAdd", HostCanAdd);
+        parameters.Add("Vehicles", Vehicles);
+        DialogService.Show<QuizMakerDialog>("Add New Quiz", parameters, options);
     }
 
 }

@@ -13,10 +13,10 @@
 
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Primary">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Secondary" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">RoadTrip</MudText>
         <MudSpacer />
-        <MudIconButton OnClick="ThemeToggle" Icon="@_themeIcon"></MudIconButton>
+        <MudIconButton OnClick="ThemeToggle" Icon="@_themeIcon" Color="Color.Secondary"></MudIconButton>
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
@@ -36,19 +36,19 @@
             </Authorized>
             <NotAuthorized>
                 <div class="nav-item px-3">
-                    <MudNavLink Icon="@Icons.Material.Outlined.AppRegistration" Href="Account/Register">
+                    <MudNavLink Icon="@Icons.Material.Outlined.AppRegistration" Href="Account/Register" IconColor="Color.Secondary">
                         <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
                     </MudNavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <MudNavLink Icon="@Icons.Material.Outlined.Login" Href="Account/Login">
+                    <MudNavLink Icon="@Icons.Material.Outlined.Login" Href="Account/Login" IconColor="Color.Secondary">
                         <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
                     </MudNavLink>
                 </div>
             </NotAuthorized>
         </AuthorizeView>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Color="Color.Surface">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>

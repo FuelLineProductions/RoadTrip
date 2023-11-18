@@ -1,0 +1,21 @@
+﻿@using RoadTrip.RoadTripDb.Database.Models
+<MudDialog>
+    <DialogContent>
+        <QuizMaker HostCanAdd="@HostCanAdd" Vehicles="@Vehicles" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public bool HostCanAdd { get; set; }
+    [Parameter]
+    public List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}
+

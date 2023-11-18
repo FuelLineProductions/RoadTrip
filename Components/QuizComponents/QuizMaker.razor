@@ -7,59 +7,55 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<RoadTripUser> UserManager
 @inject NavigationManager Navigation
-<MudContainer Style="width=75%">
-    <MudPaper Outlined="true" Elevation="1">
-        @if (HostCanAdd)
-        {
-            @if (Quiz != null)
-            {
-                <MudText Typo="Typo.h2">Create a quiz</MudText>
+@if (HostCanAdd)
+{
+    @if (Quiz != null)
+    {
+        <MudText Typo="Typo.h2">Create a quiz</MudText>
 
-                <MudForm Style="width=75%">
-                    <MudTextField @bind-Value="Quiz.Title" Label="Quiz Title" Placeholder="Quiz Title"></MudTextField>
-                    <MudTextField @bind-Value="Quiz.Description" Label="Description" Placeholder="Description"></MudTextField>
-                    <MudNumericField @bind-Value="Quiz.MinimumAnswers" Label="Minimum answers to complete" Placeholder="10"></MudNumericField>
-                    <MudNumericField @bind-Value="Quiz.MaximumAnswers" Label="Maximum answers to complete" Placeholder="20"></MudNumericField>
-                    <MudNumericField @bind-Value="Quiz.TotalDistance" Label="Total distance to cover to get the end of the RoadTrip" Placeholder="100"></MudNumericField>
-                    <MudNumericField @bind-Value="Quiz.TotalScore" Label="Total score available in this quiz" Placeholder="100"></MudNumericField>
-                    <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="AddNewQuestion">Add New Question</MudButton>
-                    @if (Questions.Any())
-                    {
-                        @foreach (var question in Questions)
-                        {
-                            <MudTextField @bind-Value="question.QuestionTitle" Label="Question Title" Placeholder="Question Title"></MudTextField>
-                            <MudTextField @bind-Value="question.CorrectAnswer" Label="Question Answer" Placeholder="Question Answer"></MudTextField>
-                            <MudNumericField @bind-Value="question.FuelRewardCorrectAnswer" Label="Fuel Reward Correct Answer" Placeholder="5"></MudNumericField>
-                            <MudNumericField @bind-Value="question.FuelRewardIncorrectAnswer" Label="Fuel Reward Incorrect Answer" Placeholder="1"></MudNumericField>
-                            <MudNumericField @bind-Value="question.PointsReward" Label="Points Reward towards total score on correct answer" Placeholder="5"></MudNumericField>
-                        }
-                    }
-                    @if (Vehicles.Any())
-                    {
-                        @foreach (var vehicle in Vehicles)
-                        {
-                            <MudText Typo="Typo.body1">Vehicle Name: @vehicle.Name</MudText>
-                            <MudText Typo="Typo.body1">Vehicle Description: @vehicle.Description</MudText>
-                            <MudText Typo="Typo.body1">Vehicle Fuel Capacity: @vehicle.FuelCapacity</MudText>
-                            @if (vehicle.FuelType != null)
-                            {
-                                <MudText Typo="Typo.body1">Vehicle Fuel Type: @vehicle.FuelType.Name</MudText>
-                                <MudText Typo="Typo.body1">Vehicle Fuel Type Cost per Question: @vehicle.FuelType.CostPerQuestion</MudText>
-                            }
-                            <MudButton OnClick="(() => AssignSelectedVehicle(vehicle))" Variant="Variant.Filled" Color="Color.Secondary">Assign Vehicle @vehicle.Name to Quiz</MudButton>
-                        }
-                    }
-                    <MudSpacer />
-                    <MudButton OnClick="AddNewQuiz" Variant="Variant.Filled" Color="Color.Success" ButtonType="ButtonType.Submit">Submit New Quiz</MudButton>
-                </MudForm>
+        <MudForm Style="width=75%">
+            <MudTextField @bind-Value="Quiz.Title" Label="Quiz Title" Placeholder="Quiz Title"></MudTextField>
+            <MudTextField @bind-Value="Quiz.Description" Label="Description" Placeholder="Description"></MudTextField>
+            <MudNumericField @bind-Value="Quiz.MinimumAnswers" Label="Minimum answers to complete" Placeholder="10"></MudNumericField>
+            <MudNumericField @bind-Value="Quiz.MaximumAnswers" Label="Maximum answers to complete" Placeholder="20"></MudNumericField>
+            <MudNumericField @bind-Value="Quiz.TotalDistance" Label="Total distance to cover to get the end of the RoadTrip" Placeholder="100"></MudNumericField>
+            <MudNumericField @bind-Value="Quiz.TotalScore" Label="Total score available in this quiz" Placeholder="100"></MudNumericField>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="AddNewQuestion">Add New Question</MudButton>
+            @if (Questions.Any())
+            {
+                @foreach (var question in Questions)
+                {
+                    <MudTextField @bind-Value="question.QuestionTitle" Label="Question Title" Placeholder="Question Title"></MudTextField>
+                    <MudTextField @bind-Value="question.CorrectAnswer" Label="Question Answer" Placeholder="Question Answer"></MudTextField>
+                    <MudNumericField @bind-Value="question.FuelRewardCorrectAnswer" Label="Fuel Reward Correct Answer" Placeholder="5"></MudNumericField>
+                    <MudNumericField @bind-Value="question.FuelRewardIncorrectAnswer" Label="Fuel Reward Incorrect Answer" Placeholder="1"></MudNumericField>
+                    <MudNumericField @bind-Value="question.PointsReward" Label="Points Reward towards total score on correct answer" Placeholder="5"></MudNumericField>
+                }
             }
-        }
-        else
-        {
-            <MudText Typo="Typo.h5">Sorry you are unable to add a new quiz at this time, please check your subscription</MudText>
-        }
-    </MudPaper>
-</MudContainer>
+            @if (Vehicles.Any())
+            {
+                @foreach (var vehicle in Vehicles)
+                {
+                    <MudText Typo="Typo.body1">Vehicle Name: @vehicle.Name</MudText>
+                    <MudText Typo="Typo.body1">Vehicle Description: @vehicle.Description</MudText>
+                    <MudText Typo="Typo.body1">Vehicle Fuel Capacity: @vehicle.FuelCapacity</MudText>
+                    @if (vehicle.FuelType != null)
+                    {
+                        <MudText Typo="Typo.body1">Vehicle Fuel Type: @vehicle.FuelType.Name</MudText>
+                        <MudText Typo="Typo.body1">Vehicle Fuel Type Cost per Question: @vehicle.FuelType.CostPerQuestion</MudText>
+                    }
+                    <MudButton OnClick="(() => AssignSelectedVehicle(vehicle))" Variant="Variant.Filled" Color="Color.Secondary">Assign Vehicle @vehicle.Name to Quiz</MudButton>
+                }
+            }
+            <MudSpacer />
+            <MudButton OnClick="AddNewQuiz" Variant="Variant.Filled" Color="Color.Success" ButtonType="ButtonType.Submit">Submit New Quiz</MudButton>
+        </MudForm>
+    }
+}
+else
+{
+    <MudText Typo="Typo.h5">Sorry you are unable to add a new quiz at this time, please check your subscription</MudText>
+}
 @code {
     [Parameter]
     public bool HostCanAdd { get; set; }
@@ -68,7 +64,7 @@
     [Parameter]
     public List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     private List<Vehicle> SelectedVehicles { get; set; } = new List<Vehicle>();
-    private HubConnection HubConnection;
+    private HubConnection? HubConnection;
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,18 +83,19 @@
         await InvokeAsync(StateHasChanged);
     }
 
-
     private async Task AddNewQuiz()
     {
         var authState = await AuthenticationStateProvider
             .GetAuthenticationStateAsync();
         var userClaim = authState.User;
         var user = await UserManager.GetUserAsync(userClaim);
-
-        Quiz.OwnerId = user.RoadTripId;
-        Quiz.Questions = Questions;
-        Quiz.Vehicles = SelectedVehicles;
-        await HubConnection.InvokeAsync("AddQuiz", Quiz);
+        if (Quiz != null && user != null && HubConnection != null)
+        {
+            Quiz.OwnerId = user.RoadTripId;
+            Quiz.Questions = Questions;
+            Quiz.Vehicles = SelectedVehicles;
+            await HubConnection.InvokeAsync("AddQuiz", Quiz);
+        }
     }
 
     private void AddNewQuestion()
@@ -113,5 +110,4 @@
         SelectedVehicles.Add(vehicle);
         StateHasChanged();
     }
-
 }
