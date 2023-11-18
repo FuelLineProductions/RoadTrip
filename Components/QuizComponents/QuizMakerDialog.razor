@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client
 @using RoadTrip.RoadTripDb.Database.Models
+@using System.Text.Json
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -58,18 +59,12 @@
                     <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="AddNewQuestion">Add New Question</MudButton>
                     @if (Vehicles.Any())
                     {
-                        @foreach (var vehicle in Vehicles)
-                        {
-                            <MudText Typo="Typo.body1">Vehicle Name: @vehicle.Name</MudText>
-                            <MudText Typo="Typo.body1">Vehicle Description: @vehicle.Description</MudText>
-                            <MudText Typo="Typo.body1">Vehicle Fuel Capacity: @vehicle.FuelCapacity</MudText>
-                            @if (vehicle.FuelType != null)
+                        <MudSelect @bind-SelectedValues="SelectedVehicles" MultiSelection="true" MultiSelectionTextFunc="@(new Func<List<string>,string>(GetMultiSelectionText))" SelectAll="true">
+                            @foreach (var vehicle in Vehicles)
                             {
-                                <MudText Typo="Typo.body1">Vehicle Fuel Type: @vehicle.FuelType.Name</MudText>
-                                <MudText Typo="Typo.body1">Vehicle Fuel Type Cost per Question: @vehicle.FuelType.CostPerQuestion</MudText>
+                                <MudSelectItem Value="vehicle">Vehicle Name: @vehicle.Name, Capacity @vehicle.FuelCapacity, Fuel Cost Per Question @vehicle.FuelType?.CostPerQuestion</MudSelectItem>
                             }
-                            <MudButton OnClick="(() => AssignSelectedVehicle(vehicle))" Variant="Variant.Filled" Color="Color.Secondary">Assign Vehicle @vehicle.Name to Quiz</MudButton>
-                        }
+                        </MudSelect>
                     }
                 </MudForm>
             }
@@ -92,7 +87,7 @@
     private Quiz? Quiz { get; set; } = null;
     [Parameter]
     public List<Vehicle> Vehicles { get; set; } = new();
-    private List<Vehicle> SelectedVehicles { get; set; } = new();
+    private IEnumerable<Vehicle> SelectedVehicles { get; set; } = new List<Vehicle>();
     private HubConnection? HubConnection;
     private bool HideQuestion { get; set; }
 
@@ -126,7 +121,7 @@
         if (Quiz != null && user != null && HubConnection != null)
         {
             Quiz.OwnerId = user.RoadTripId;
-            Quiz.Vehicles = SelectedVehicles;
+            Quiz.Vehicles = SelectedVehicles.ToList();
             await HubConnection.InvokeAsync("AddQuiz", Quiz);
         }
         MudDialog.Close(DialogResult.Ok(true));
@@ -146,13 +141,11 @@
         StateHasChanged();
     }
 
-    private void AssignSelectedVehicle(Vehicle vehicle)
+    private string GetMultiSelectionText(List<string> selectedValues)
     {
-        Vehicles.Remove(vehicle);
-        SelectedVehicles.Add(vehicle);
-        Snackbar.Add($"Added {vehicle.Name} to quiz", Severity.Success);
-        StateHasChanged();
+        return $"Selected vehicles: {string.Join(", ", SelectedVehicles.Select(x => x.Name))}";
     }
+
     void Cancel() => MudDialog.Cancel();
 }
 
