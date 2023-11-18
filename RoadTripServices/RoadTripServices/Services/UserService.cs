@@ -5,22 +5,13 @@ using RoadTrip.ViewModels;
 
 namespace RoadTrip.RoadTripServices.RoadTripServices.Services
 {
-    public class UserService : IUserService
+    public class UserService(IHostAppUserRepo hostUserRepo, IIndividualSubscriptionRepo individualSubscriptionRepo, IGroupSubscriptionRepo groupSubscriptionRepo, ISubscriptionTierRepo subscriptionTierRepo, IQuizRepo quizRepo) : IUserService
     {
-        private readonly IHostAppUserRepo _hostUserRepo;
-        private readonly IIndividualSubscriptionRepo _individualSubscriptionRepo;
-        private readonly IGroupSubscriptionRepo _groupSubscriptionRepo;
-        private readonly ISubscriptionTierRepo _subscriptionTierRepo;
-        private readonly IQuizRepo _quizRepo;
-
-        public UserService(IHostAppUserRepo hostUserRepo, IIndividualSubscriptionRepo individualSubscriptionRepo, IGroupSubscriptionRepo groupSubscriptionRepo, ISubscriptionTierRepo subscriptionTierRepo, IQuizRepo quizRepo)
-        {
-            _hostUserRepo = hostUserRepo;
-            _individualSubscriptionRepo = individualSubscriptionRepo;
-            _groupSubscriptionRepo = groupSubscriptionRepo;
-            _subscriptionTierRepo = subscriptionTierRepo;
-            _quizRepo = quizRepo;
-        }
+        private readonly IHostAppUserRepo _hostUserRepo = hostUserRepo;
+        private readonly IIndividualSubscriptionRepo _individualSubscriptionRepo = individualSubscriptionRepo;
+        private readonly IGroupSubscriptionRepo _groupSubscriptionRepo = groupSubscriptionRepo;
+        private readonly ISubscriptionTierRepo _subscriptionTierRepo = subscriptionTierRepo;
+        private readonly IQuizRepo _quizRepo = quizRepo;
 
         /// <inheritdoc />
         public async Task AddNewHost(AddNewHostModel addNewHostModel)
