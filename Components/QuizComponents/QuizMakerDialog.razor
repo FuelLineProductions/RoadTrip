@@ -1,11 +1,87 @@
-﻿@using RoadTrip.RoadTripDb.Database.Models
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using RoadTrip.RoadTripDb.Database.Models
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<RoadTripUser> UserManager
+@inject IDialogService DialogService
+
 <MudDialog>
     <DialogContent>
-        <QuizMaker HostCanAdd="@HostCanAdd" Vehicles="@Vehicles" />
+        @if (HostCanAdd)
+        {
+            @if (Quiz != null)
+            {
+                <MudText Typo="Typo.h2">Create a quiz</MudText>
+
+                <MudForm Style="width=99%">
+                    <MudTextField @bind-Value="Quiz.Title" Label="Quiz Title" Placeholder="Quiz Title"></MudTextField>
+                    <MudTextField @bind-Value="Quiz.Description" Label="Description" Placeholder="Description"></MudTextField>
+                    <MudNumericField @bind-Value="Quiz.MinimumAnswers" Label="Minimum answers to complete" Placeholder="10"></MudNumericField>
+                    <MudNumericField @bind-Value="Quiz.MaximumAnswers" Label="Maximum answers to complete" Placeholder="20"></MudNumericField>
+                    <MudNumericField @bind-Value="Quiz.TotalDistance" Label="Total distance to cover to get the end of the RoadTrip" Placeholder="100"></MudNumericField>
+                    <MudNumericField @bind-Value="Quiz.TotalScore" Label="Total score available in this quiz" Placeholder="100"></MudNumericField>
+                    @if (SelectedVehicles.Any())
+                    {
+                        <MudText Typo="Typo.h6">Vehicles</MudText>
+                        <MudTable Items="SelectedVehicles">
+                            <HeaderContent>
+                                <MudTh>Added Vehicle</MudTh>
+                                <MudTh>Description</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.Name</MudTd>
+                                    <MudTd>@context.Description</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                    }
+                    @if (Quiz.Questions.Any())
+                    {
+                        <MudText Typo="Typo.h6">Questions</MudText>
+                        <MudTable Items="Quiz.Questions">
+                            <HeaderContent>
+                                <MudTh>Question</MudTh>
+                                <MudTh>Correct Answer</MudTh>
+                                <MudTh>Fuel reward for correct answer</MudTh>
+                                <MudTh>Fuel reward for incorrect answer</MudTh>
+                                <MudTh>Points To Add to Score</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.QuestionTitle</MudTd>
+                                    <MudTd>@context.CorrectAnswer</MudTd>
+                                    <MudTd>@context.FuelRewardCorrectAnswer</MudTd>
+                                    <MudTd>@context.FuelRewardIncorrectAnswer</MudTd>
+                                    <MudTd>@context.PointsReward</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                    }
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="AddNewQuestion">Add New Question</MudButton>
+                    @if (Vehicles.Any())
+                    {
+                        @foreach (var vehicle in Vehicles)
+                        {
+                            <MudText Typo="Typo.body1">Vehicle Name: @vehicle.Name</MudText>
+                            <MudText Typo="Typo.body1">Vehicle Description: @vehicle.Description</MudText>
+                            <MudText Typo="Typo.body1">Vehicle Fuel Capacity: @vehicle.FuelCapacity</MudText>
+                            @if (vehicle.FuelType != null)
+                            {
+                                <MudText Typo="Typo.body1">Vehicle Fuel Type: @vehicle.FuelType.Name</MudText>
+                                <MudText Typo="Typo.body1">Vehicle Fuel Type Cost per Question: @vehicle.FuelType.CostPerQuestion</MudText>
+                            }
+                            <MudButton OnClick="(() => AssignSelectedVehicle(vehicle))" Variant="Variant.Filled" Color="Color.Secondary">Assign Vehicle @vehicle.Name to Quiz</MudButton>
+                        }
+                    }
+                </MudForm>
+            }
+        }
+        else
+        {
+            <MudText Typo="Typo.h5">Sorry you are unable to add a new quiz at this time, please check your subscription</MudText>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+        <MudButton OnClick="AddNewQuiz" Variant="Variant.Filled" Color="Color.Success" ButtonType="ButtonType.Submit">Submit New Quiz</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -13,9 +89,70 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter]
     public bool HostCanAdd { get; set; }
+    private Quiz? Quiz { get; set; } = null;
     [Parameter]
-    public List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    public List<Vehicle> Vehicles { get; set; } = new();
+    private List<Vehicle> SelectedVehicles { get; set; } = new();
+    private HubConnection? HubConnection;
+    private bool HideQuestion { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(Navigation.ToAbsoluteUri("/QuizHub"))
+        .Build();
+
+        await HubConnection.StartAsync();
+
+        HubConnection.On<bool>("AddQuizSuccess", (success) =>
+       {
+           Snackbar.Add(success ? "Successfully added quiz" : "Failed to add quiz", success ? Severity.Success : Severity.Error);
+       });
+
+        Quiz = new Quiz()
+            {
+                Questions = new List<Question>(),
+                Vehicles = new List<Vehicle>()
+            };
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task AddNewQuiz()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+        if (Quiz != null && user != null && HubConnection != null)
+        {
+            Quiz.OwnerId = user.RoadTripId;
+            Quiz.Vehicles = SelectedVehicles;
+            await HubConnection.InvokeAsync("AddQuiz", Quiz);
+        }
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private async Task AddNewQuestion()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.False };
+        var parameters = new DialogParameters<QuestionMakerDialog>();
+        var dialog = DialogService.Show<QuestionMakerDialog>("Add New Question", parameters, options);
+        var result = await dialog.Result;
+        var question = (Question?)result.Data;
+        if (question != null && !string.IsNullOrWhiteSpace(question.QuestionTitle) && Quiz != null)
+        {
+            Quiz.Questions.Add(question);
+        }
+        StateHasChanged();
+    }
+
+    private void AssignSelectedVehicle(Vehicle vehicle)
+    {
+        Vehicles.Remove(vehicle);
+        SelectedVehicles.Add(vehicle);
+        Snackbar.Add($"Added {vehicle.Name} to quiz", Severity.Success);
+        StateHasChanged();
+    }
     void Cancel() => MudDialog.Cancel();
 }
 

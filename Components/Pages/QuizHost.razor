@@ -94,11 +94,12 @@
         });
 
         HubConnection.On<List<Vehicle>>("AllVehicles", async vehicles =>
-                 {
-                     Vehicles = vehicles;
-                     await InvokeAsync(StateHasChanged);
-                 });
-        await HubConnection.InvokeAsync("GetAllVehicles");
+        {
+            Vehicles = vehicles;
+            await InvokeAsync(StateHasChanged);
+        });
+
+        await GetAllVechicles();
         await AddNewQuiz();
     }
 
@@ -125,7 +126,6 @@
         await InvokeAsync(StateHasChanged);
     }
 
-
     private async Task OpenPreviewDialogAsync(Quiz? quiz)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.False };
@@ -143,7 +143,15 @@
         var parameters = new DialogParameters<QuizMakerDialog>();
         parameters.Add("HostCanAdd", HostCanAdd);
         parameters.Add("Vehicles", Vehicles);
-        DialogService.Show<QuizMakerDialog>("Add New Quiz", parameters, options);
+        var dialog = DialogService.Show<QuizMakerDialog>("Add New Quiz", parameters, options);
+        var result = await dialog.Result;
+        await Check();
+        await GetAllVechicles();
     }
 
+    private async Task GetAllVechicles()
+    {
+        if (HubConnection != null)
+            await HubConnection.InvokeAsync("GetAllVehicles");
+    }
 }

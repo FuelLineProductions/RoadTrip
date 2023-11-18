@@ -1,0 +1,24 @@
+﻿@using RoadTrip.RoadTripDb.Database.Models
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="Question.QuestionTitle" Label="Question Title" Placeholder="Question Title"></MudTextField>
+        <MudTextField @bind-Value="Question.CorrectAnswer" Label="Question Answer" Placeholder="Question Answer"></MudTextField>
+        <MudNumericField @bind-Value="Question.FuelRewardCorrectAnswer" Label="Fuel Reward Correct Answer" Placeholder="5"></MudNumericField>
+        <MudNumericField @bind-Value="Question.FuelRewardIncorrectAnswer" Label="Fuel Reward Incorrect Answer" Placeholder="1"></MudNumericField>
+        <MudNumericField @bind-Value="Question.PointsReward" Label="Points Reward towards total score on correct answer" Placeholder="5"></MudNumericField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code 
+{
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public Question Question { get; set; } = new();
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(Question));
+    void Cancel() => MudDialog.Cancel();
+}
