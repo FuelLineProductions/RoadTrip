@@ -11,6 +11,8 @@ using RoadTrip.RoadTripDb.Database;
 using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripDb.Repos;
 using RoadTrip.RoadTripServices.RoadTripServices.Services;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 using IQuizRepo = RoadTrip.RoadTripDb.Repos.IQuizRepo;
 
 namespace RoadTrip
@@ -93,6 +95,22 @@ namespace RoadTrip
                       new[] { "application/octet-stream" });
             });
 
+            var logDB = builder.Configuration.GetConnectionString("LogDb");
+            var sinkOpts = new MSSqlServerSinkOptions { TableName = "Logs" };
+            var columnOpts = new ColumnOptions();
+
+            var path = builder.Configuration.GetSection("LogFile").Value ?? $"{Directory.GetCurrentDirectory}{Path.DirectorySeparatorChar}logs{Path.DirectorySeparatorChar}Log-.txt";
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File(path, rollingInterval: RollingInterval.Day)
+                .WriteTo.MSSqlServer
+                (
+                    connectionString: logDB,
+                    sinkOptions: sinkOpts,
+                    columnOptions: columnOpts,
+                    appConfiguration: builder.Configuration
+                )
+                .CreateLogger();
             var app = builder.Build();
             app.UseResponseCompression();
             // Configure the HTTP request pipeline.
@@ -118,7 +136,7 @@ namespace RoadTrip
 
             // Add additional endpoints required by the Identity /Account Razor components.
             app.MapAdditionalIdentityEndpoints();
-            
+
             app.Run();
         }
     }

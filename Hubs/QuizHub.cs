@@ -2,6 +2,7 @@
 using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripDb.Repos;
 using RoadTrip.RoadTripServices.RoadTripServices.Services;
+using Serilog;
 
 namespace RoadTrip.Hubs
 {
@@ -28,7 +29,8 @@ namespace RoadTrip.Hubs
 
         public async Task GetAllQuizzesForOwner(Guid ownerId)
         {
-            var quizzes = await _quizService.GetAllQuizzesForOwner(ownerId);            
+            var quizzes = await _quizService.GetAllQuizzesForOwner(ownerId);
+            Log.Information("Got quizzes for owner {quizzes}, {ownerId}", string.Join(", ", quizzes.Select(x => x.Title)), ownerId);
             await Clients.Caller.SendAsync("AllQuizzesForOwner", quizzes.Count != 0 ? quizzes.ToList() : []);
         }
 

@@ -1,5 +1,6 @@
 ﻿using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripDb.Repos;
+using Serilog;
 
 namespace RoadTrip.RoadTripServices.RoadTripServices.Services
 {
@@ -9,6 +10,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         private readonly IQuestionRepo _questionRepo = questionRepo;
         private readonly IVehicleRepo _vehicleRepo = vehicleRepo;
 
+        /// <inheritdoc/>
         public async Task<ICollection<Quiz>> GetAllQuizzesForOwner(Guid ownerId)
         {
             var quizzes = _quizRepo.GetManyForOwner(ownerId).ToList();
@@ -26,6 +28,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             return outputQuizzes;
         }
 
+        /// <inheritdoc/>
         public async Task<ICollection<Quiz>> GetActiveQuizzesForOwner(Guid ownerId)
         {
             var quizzes = _quizRepo.GetQueryable().Where(q => q.OwnerId.Equals(ownerId) && q.Active);
@@ -38,6 +41,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             return output;
         }
 
+        /// <inheritdoc/>
         public async Task<Quiz> GetQuiz(Guid quizId)
         {
             var quiz = await _quizRepo.Get(quizId);
@@ -63,6 +67,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             return quiz;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> AddQuiz(Quiz quiz)
         {
             try
@@ -94,19 +99,20 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
                     await _quizRepo.AddRangeVehicleToQuiz(maps);
                 }
             }
-            catch (ArgumentNullException)
+            catch (ArgumentNullException ex)
             {
-                // TODO Log exception
+                Log.Error("Null exception on add quiz {ex}", ex);
                 return false;
             }
             catch (Exception ex)
             {
-                // TODO Catch all potential exceptions & log
+                Log.Error("Unhandled exception on add quiz {ex}", ex);
                 return false;
             }
             return true;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> UpdateQuiz(Quiz quiz)
         {
             try
@@ -155,26 +161,28 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
                         await _quizRepo.AddVehicleToQuiz(existingQuiz.Id, vehicle.Id);
                     }
                 }
-
             }
-            catch (ArgumentNullException)
+            catch (ArgumentNullException ex)
             {
+                Log.Error("Null exception on update quiz {ex}", ex);
                 // TODO Log exception
                 return false;
             }
-            //catch (Exception)
-            //{
-            //    // TODO Catch all potential exceptions & log
-            //    return false;
-            //}
+            catch (Exception ex)
+            {
+                Log.Error("Unhandled exception on update quiz {ex}", ex);
+                return false;
+            }
             return true;
         }
 
+        /// <inheritdoc/>
         public async Task RemoveQuestionFromQuiz(Question question)
         {
             await _questionRepo.RemoveAsync(question);
         }
 
+        /// <inheritdoc/>
         public async Task RemoveVehicleFromQuiz(Quiz quiz, int vehicleId)
         {
             await _quizRepo.RemoveVehicleFromQuiz(quiz.Id, vehicleId);
