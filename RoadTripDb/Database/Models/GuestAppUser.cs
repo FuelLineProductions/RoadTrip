@@ -11,6 +11,6 @@ namespace RoadTrip.RoadTripDb.Database.Models
         public Guid? ActiveRoomId { get; set; }
 
         [NotMapped]
-        public ICollection<Guid> RoomInvites { get; set; }
+        public virtual ICollection<Guid> RoomInvites { get; set; } = null!;
     }
 }

@@ -76,7 +76,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
                 var added = await _quizRepo.AddAsync(quiz);
                 ArgumentNullException.ThrowIfNull(added, "failed to add quiz to Db");
 
-                if (quiz.Questions.Any())
+                if (quiz.Questions.Count != 0)
                 {
                     foreach (var question in quiz.Questions)
                     {
@@ -85,7 +85,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
                     }
                 }
 
-                if (quiz.Vehicles.Any())
+                if (quiz.Vehicles.Count != 0)
                 {
                     var maps = new List<QuizVehicles>();
                     foreach (var vehicle in quiz.Vehicles)
@@ -165,7 +165,6 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             catch (ArgumentNullException ex)
             {
                 Log.Error("Null exception on update quiz {ex}", ex);
-                // TODO Log exception
                 return false;
             }
             catch (Exception ex)

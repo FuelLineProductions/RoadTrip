@@ -1,0 +1,77 @@
+﻿@page "/ActiveQuiz"
+@using RoadTrip.Components.QuizComponents
+@using RoadTrip.RoadTripDb.Database.Models
+@using RoadTrip.ViewModels
+<MudPaper>
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h1">Active Quiz</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText>Example Host View</MudText>
+            <QuizHostView Quiz="@ExampleQuiz" GuestProgress="@ExampleProgress"></QuizHostView>
+            <MudText>Example Guest View</MudText>
+            <QuizGuestView Quiz="@ExampleQuiz" QuizTaker="@ExampleQuizTaker"></QuizGuestView>
+        </MudCardContent>
+    </MudCard>
+</MudPaper>
+@code {
+    [Parameter]
+    public Guid QuizId { get; set; }
+
+    private List<CurrentQuizProgress> ExampleProgress { get; set; } = new List<CurrentQuizProgress>()
+    {
+        new CurrentQuizProgress
+        {
+            CurrentFuel = 10,
+            CurrentQuestion = "Example Question 1",
+            CurrentScore = 10,
+            DisplayName = "Example User 1",
+            StartedQuestion = DateTime.Now.AddMinutes(-10)
+        },
+        new CurrentQuizProgress
+        {
+           CurrentFuel = 20,
+           CurrentQuestion = "Example Question 2",
+           CurrentScore = 15,
+           DisplayName = "Example User 2",
+            StartedQuestion = DateTime.Now.AddMinutes(-5)
+         }
+    };
+
+    private Quiz ExampleQuiz { get; set; } = new() { Title = "Example Quiz Title" ,
+    Id = Guid.Empty,
+    Questions = new List<Question>()
+    {
+        new Question()
+        {
+            QuestionTitle = "Example Question 1",
+            CorrectAnswer = "Answer",
+            FuelRewardCorrectAnswer = 10, 
+            FuelRewardIncorrectAnswer = 1, 
+            PointsReward = 10, 
+            QuizId = Guid.Empty,
+            Id = 1
+        },
+         new Question()
+        {
+            QuestionTitle = "Example Question 2",
+            CorrectAnswer = "Answer",
+            FuelRewardCorrectAnswer = 10,
+            FuelRewardIncorrectAnswer = 1,
+            PointsReward = 10,
+            QuizId = Guid.Empty,
+            Id = 2
+        }
+    },    
+
+    };
+
+    private GuestAppUser ExampleQuizTaker = new GuestAppUser()
+    {
+        DisplayName = "Example User",
+        GuestId = Guid.Empty,
+        HostId = Guid.Empty,        
+
+    };
+}

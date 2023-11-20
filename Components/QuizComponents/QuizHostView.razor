@@ -1,0 +1,40 @@
+﻿@using RoadTrip.RoadTripDb.Database.Models
+@using RoadTrip.ViewModels
+<AuthorizeView>
+    <Authorized>
+        <MudCard>
+            <MudCardHeader>
+                <MudText Typo="Typo.h2">Quiz @Quiz.Title in progress</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTable Items="@GuestProgress" Context="guest">
+                    <HeaderContent>
+                        <MudTh>Display Name</MudTh>
+                        <MudTh>Current Fuel Reading</MudTh>
+                        <MudTh>Current Quiz Score</MudTh>
+                        <MudTh>Current Question</MudTh>
+                        <MudTh>Started Question At</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@guest.DisplayName</MudTd>
+                            <MudTd>@guest.CurrentFuel</MudTd>
+                            <MudTd>@guest.CurrentScore</MudTd>
+                            <MudTd>@guest.CurrentQuestion</MudTd>
+                            <MudTd>@guest.StartedQuestion</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        </Authorized>
+        <NotAuthorized>
+            <MudText Typo="Typo.body2">Please Log In</MudText>
+        </NotAuthorized>
+    </AuthorizeView>
+    @code {
+    [Parameter]
+    public Quiz Quiz { get; set; }
+    [Parameter]
+    public ICollection<CurrentQuizProgress> GuestProgress { get; set; }
+
+
+}

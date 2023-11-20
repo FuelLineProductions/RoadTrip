@@ -1,0 +1,115 @@
+﻿@using RoadTrip.RoadTripDb.Database.Models
+@using RoadTrip.ViewModels
+@inject ISnackbar Snackbar
+<MudCard>
+    <MudCardHeader>
+        <MudText>Quiz: @Quiz.Title</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudNumericField @bind-Value="FuelNeededGuess" Label="Fuel Guess"></MudNumericField>
+            <MudButton OnClick="SubmitGuess" Color="Color.Secondary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Guess</MudButton>
+            <MudTimeline TimelineAlign="TimelineAlign.Start" TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
+                @foreach (var question in Questions)
+            {
+                if (question.Show)
+                {
+                    <MudTimelineItem>
+                        <MudText Typo="Typo.h4">Question @question.QuestionTitle</MudText>
+                            <MudTextField @bind-Value="@CurrentAnswer" Placeholder="Answer" Label="Answer"></MudTextField>
+                            <MudButton Color="Color.Secondary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" OnClick="(() => SubmitAnswer(question))">Submit Answer</MudButton>
+                        </MudTimelineItem>
+                }
+            }
+        </MudTimeline>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public Quiz Quiz { get; set; }
+    [Parameter]
+    public GuestAppUser QuizTaker { get; set; }
+    private Question CurrentQuestion { get; set; }
+    private string? CurrentAnswer { get; set; }
+    private CurrentQuizProgress CurrentProgress { get; set; }
+    private List<Answer> CompletedAnswers { get; set; } = new();
+    private int FuelNeededGuess { get; set; } = 0;
+    private int CurrentScore { get; set; } = 0;
+    private List<QuestionTakerView> Questions { get; set; } = new List<QuestionTakerView>();
+
+    protected override Task OnParametersSetAsync()
+    {
+        if (Quiz != null)
+        {
+            foreach (var question in Quiz.Questions)
+            {
+                Questions.Add(new QuestionTakerView(question)
+                    {
+                        Show = false
+                    });
+            }
+        }
+        return base.OnParametersSetAsync();
+    }
+
+    private async Task SubmitAnswer(QuestionTakerView question)
+    {
+        if (string.IsNullOrWhiteSpace(CurrentAnswer))
+        {
+            Snackbar.Add("Please enter an answer", Severity.Error);
+            return;
+        }
+
+        int fuelChange;
+        int newFuel;
+        int scoreGained;
+        if (CurrentAnswer.Equals(question.CorrectAnswer))
+        {
+            fuelChange = question.FuelRewardCorrectAnswer;
+            newFuel = question.FuelRewardCorrectAnswer + FuelNeededGuess;
+            scoreGained = question.PointsReward;
+            CurrentScore += question.PointsReward;
+        }
+        else
+        {
+            fuelChange = question.FuelRewardIncorrectAnswer;
+            newFuel = question.FuelRewardIncorrectAnswer + FuelNeededGuess;
+            scoreGained = 0;
+        }
+
+        CompletedAnswers.Add(new Answer
+            {
+                GivenAnswer = CurrentAnswer,
+                FuelChange = fuelChange,
+                ScoreGained = scoreGained,
+                GuestId = QuizTaker.GuestId,
+                QuizId = Quiz.Id,
+                FuelGuess = FuelNeededGuess,
+            });
+
+        CurrentAnswer = string.Empty;
+        Questions.Remove(question);
+        var next = Questions.FirstOrDefault();
+        if (next != null)
+        {
+            Questions.Remove(next);
+            next.Show = true;
+            Questions.Add(next);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SubmitGuess()
+    {
+        var q = Questions.FirstOrDefault();
+        if (q == null)
+        {
+            return;
+        }
+        Questions.Remove(q);
+        q.Show = true;
+        Questions.Add(q);
+        await InvokeAsync(StateHasChanged);
+
+    }
+}
