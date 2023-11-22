@@ -2,6 +2,7 @@
 using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripDb.Repos;
 using RoadTrip.RoadTripServices.RoadTripServices.Services;
+using RoadTrip.ViewModels;
 using Serilog;
 
 namespace RoadTrip.Hubs
@@ -48,6 +49,16 @@ namespace RoadTrip.Hubs
                 vehicle.FuelType = await _fuelTypeRepo.Get(vehicle.FuelTypeId);
             }
             await Clients.Caller.SendAsync("AllVehicles", vehicles);
+        }
+
+        public async Task SetInitialQuizProgress(CurrentQuizProgress currentQuizProgress)
+        {
+            
+        }
+        
+        public async Task UpdateCurrentQuizProgress(CurrentQuizProgress currentQuizProgress)
+        {
+            await Clients.User(currentQuizProgress.OwnerNameIdentifier).SendAsync("CurrentQuizProgress", currentQuizProgress);
         }
     }
 }
