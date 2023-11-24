@@ -1,0 +1,45 @@
+﻿@page "/JoinGame"
+@using RoadTrip.RoadTripDb.Database.Models
+@using RoadTrip.RoadTripServices.RoadTripServices.Services
+@using System.Collections.Immutable
+@inject IQuizService QuizService
+<MudContainer>
+    <MudText Typo="Typo.h2">Join a Game</MudText>
+    <MudCard>
+        <MudCardHeader>
+            Open games
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTable Items="OpenQuizzes">
+                <HeaderContent>
+                    <MudTh>Title</MudTh>
+                    <MudTh>Description</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Title</MudTd>
+                    <MudTd>@context.Description</MudTd>
+                    <MudTd><MudButton Color="Color.Secondary" Variant="Variant.Outlined">Join</MudButton></MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
+    <MudCard>
+        <MudCardHeader>
+
+        </MudCardHeader>
+        <MudCardContent>
+
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+    @code {
+    private IImmutableList<Quiz> OpenQuizzes { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var quizzes = await QuizService.GetOpenActiveQuizzes();
+        OpenQuizzes = quizzes;
+        await InvokeAsync(StateHasChanged);
+    }
+}

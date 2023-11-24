@@ -1,42 +1,117 @@
 ﻿@page "/CreateNewGame"
 @using RoadTrip.RoadTripDb.Database.Models
 @using RoadTrip.Components.QuizComponents
+@using RoadTrip.RoadTripServices.RoadTripServices.Services
 @using RoadTrip.ViewModels
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<RoadTripUser> UserManager
+@inject IQuizService QuizService
 
-<MudCard>
-    <MudSelect @bind-Value="SelectedQuiz" Label="Select a quiz">
-        @foreach (var quiz in MyQuizzes)
-        {
-            <MudSelectItem Value="@quiz">@quiz.Title</MudSelectItem>
-        }
-    </MudSelect>
-    @if (SelectedQuiz.Id != Guid.Empty)
-    {
-        <QuizFullView Quiz="SelectedQuiz" ShowAnswers="false" ShowQuestions="false" ShowVehicles="false"></QuizFullView>
-    }
-    
-    <MudButton OnClick="SetQuiz">Confirm Quiz</MudButton>
-</MudCard>
+<AuthorizeView>
+    <Authorized>
+        <MudContainer Style="width=95%;">
+            <MudCard>
+                <MudSelect @bind-Value="SelectedQuiz" Label="Select a quiz" Placeholder="Select" Text="Select">
+                    @foreach (var quiz in MyQuizzes)
+                    {
+                        <MudSelectItem Value="@quiz">@quiz.Title</MudSelectItem>
+                    }
+                </MudSelect>
+                @if (SelectedQuiz.Id != Guid.Empty)
+                {
+                    <QuizFullView Quiz="SelectedQuiz" ShowAnswers="false" ShowQuestions="false" ShowVehicles="false"></QuizFullView>
+                }
+                <MudButton OnClick="SetQuiz">Activate Quiz</MudButton>
+            </MudCard>
+            @if (SelectedQuiz.Active)
+            {
+                <MudText Typo="Typo.h4">@SelectedQuiz.Title is now active, guests can join</MudText>
+                <MudCard>
+                    <MudText Typo="Typo.h4">Quiz Takers</MudText>
+                    <MudText>Requested entry</MudText>
+                    <MudTable Items="GuestRequests" Context="guestRequest">
+                        <HeaderContent>
+                            <MudTh>Primary Name</MudTh>
+                            <MudTh>Surname</MudTh>
+                            <MudTh>Display Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@guestRequest.PrimaryName</MudTd>
+                                <MudTd>@guestRequest.Surname</MudTd>
+                                <MudTd>@guestRequest.DisplayName</MudTd>
+                                <MudTd><MudButton OnClick="@(() => AddGuestToAllowed(guestRequest))">Allow To Play</MudButton></MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudCard>
+                <MudCard>
+                    <MudText Typo="Typo.h4">Allowed Guests</MudText>
+                    <MudTable Items="AllowedGuests" Context="allowedGuest">
+                        <HeaderContent>
+                            <MudTh>Primary Name</MudTh>
+                            <MudTh>Surname</MudTh>
+                            <MudTh>Display Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@allowedGuest.PrimaryName</MudTd>
+                                <MudTd>@allowedGuest.Surname</MudTd>
+                                <MudTd>@allowedGuest.DisplayName</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudCard>
+                <MudButton OnClick="StartNewGame">Start New Game</MudButton>
+            }
+            else if (!string.IsNullOrWhiteSpace(SelectedQuiz.Title))
+            {
 
-<MudCard>
-    <MudText>Quiz Takers</MudText>
-</MudCard>
-
-<MudButton OnClick="StartNewGame">Start New Game</MudButton>
-@code {
+                <MudText Typo="Typo.h4">@SelectedQuiz.Title is inactive</MudText>
+            }
+        </MudContainer>
+        </Authorized>
+        <NotAuthorized>
+            <MudText>Please sign in</MudText>
+        </NotAuthorized>
+    </AuthorizeView>
+    @code {
     private List<Quiz> MyQuizzes { get; set; } = new();
     private Quiz SelectedQuiz { get; set; } = new() { Id = Guid.Empty };
     private List<GuestAppUser> AllowedGuests { get; set; } = new List<GuestAppUser>();
-    private GuestAppUser GuestRequestor { get; set; } = new();
+    private List<GuestAppUser> GuestRequests { get; set; } = new();
     private List<CurrentQuizProgress> InitializedProgresses { get; set; } = new List<CurrentQuizProgress>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+        if (user == null)
+        {
+            return;
+        }
+        var quizzes = await QuizService.GetAllQuizzesForOwner(user.RoadTripId);
+        MyQuizzes = quizzes.ToList();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task AddGuestToAllowed(GuestAppUser guestAppUser)
+    {
+        // TODO: Invoke a service to check the total allow guests in this room for this owner
+        // Then add this person to the
+        AllowedGuests.Add(guestAppUser);
+        GuestRequests.Remove(guestAppUser);
+        await InvokeAsync(StateHasChanged);
+    }
 
     private async Task SetQuiz()
     {
-        
+        // TODO: Some service to intialize the quiz
+        var activatedQuiz = await QuizService.ActivateQuiz(SelectedQuiz);
+        SelectedQuiz = activatedQuiz;
+        await InvokeAsync(StateHasChanged);
     }
+
     private async Task StartNewGame()
     {
-        
+        // TODO Some work to start the quiz
     }
 }

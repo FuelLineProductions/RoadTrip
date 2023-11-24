@@ -1,6 +1,8 @@
 ﻿using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripDb.Repos;
+using RoadTrip.ViewModels;
 using Serilog;
+using System.Collections.Immutable;
 
 namespace RoadTrip.RoadTripServices.RoadTripServices.Services
 {
@@ -185,6 +187,29 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         public async Task RemoveVehicleFromQuiz(Quiz quiz, int vehicleId)
         {
             await _quizRepo.RemoveVehicleFromQuiz(quiz.Id, vehicleId);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IImmutableList<Quiz>> GetOpenActiveQuizzes()
+        {
+            // TODO: Add functionality to differenciate between open to anyone, and invite only quizzes
+            return [.. _quizRepo.GetQueryable().Where(x => x.Active)];
+        }
+
+        /// <inheritdoc/>
+        public async Task<Quiz> GetInviteOnlyQuiz()
+        {
+            // TODO Make and implement a way of sending an invite only quiz option
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public async Task<Quiz> ActivateQuiz(Quiz quiz)
+        {
+            // TODO Check other quizzes.
+            // If other quizes are active, deactivate them
+            quiz.Active = !quiz.Active;
+            return await _quizRepo.UpdateAsync(quiz);
         }
     }
 }

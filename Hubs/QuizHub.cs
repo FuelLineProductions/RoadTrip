@@ -7,20 +7,12 @@ using Serilog;
 
 namespace RoadTrip.Hubs
 {
-    public class QuizHub : Hub
+    public class QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo) : Hub
     {
-        private readonly IUserService _userService;
-        private readonly IQuizService _quizService;
-        private readonly IVehicleRepo _vehicleRepo;
-        private readonly IFuelTypeRepo _fuelTypeRepo;
-
-        public QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo)
-        {
-            _userService = userService;
-            _quizService = quizService;
-            _vehicleRepo = vehicleRepo;
-            _fuelTypeRepo = fuelTypeRepo;
-        }       
+        private readonly IUserService _userService = userService;
+        private readonly IQuizService _quizService = quizService;
+        private readonly IVehicleRepo _vehicleRepo = vehicleRepo;
+        private readonly IFuelTypeRepo _fuelTypeRepo = fuelTypeRepo;
 
         public async Task AddQuiz(Quiz quiz)
         {            
@@ -53,7 +45,7 @@ namespace RoadTrip.Hubs
 
         public async Task SetInitialQuizProgress(CurrentQuizProgress currentQuizProgress)
         {
-            
+           
         }
         
         public async Task UpdateCurrentQuizProgress(CurrentQuizProgress currentQuizProgress)

@@ -111,6 +111,7 @@ namespace RoadTrip
                     appConfiguration: builder.Configuration
                 )
                 .CreateLogger();
+
             var app = builder.Build();
             app.UseResponseCompression();
             // Configure the HTTP request pipeline.
