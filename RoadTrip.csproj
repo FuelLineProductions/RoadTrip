@@ -11,9 +11,13 @@
 
   <ItemGroup>
     <Compile Remove="RoadTripDb\Migrations\**" />
+    <Compile Remove="RoadTripTests\**" />
     <Content Remove="RoadTripDb\Migrations\**" />
+    <Content Remove="RoadTripTests\**" />
     <EmbeddedResource Remove="RoadTripDb\Migrations\**" />
+    <EmbeddedResource Remove="RoadTripTests\**" />
     <None Remove="RoadTripDb\Migrations\**" />
+    <None Remove="RoadTripTests\**" />
   </ItemGroup>
 
   <ItemGroup>
