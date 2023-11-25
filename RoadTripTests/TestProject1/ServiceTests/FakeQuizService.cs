@@ -1,11 +1,6 @@
 ﻿using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripServices.RoadTripServices.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoadTripTests.ServiceTests
 {
@@ -35,6 +30,18 @@ namespace RoadTripTests.ServiceTests
                 TotalScore = 105,
                 Active = false,
                 Id = Guid.Parse("57c21187-224c-4c51-8efb-f830c00de0bc")
+            },
+            new Quiz
+            {
+                Title = "Title3",
+                Description = "Description3",
+                MaximumAnswers = 15,
+                MinimumAnswers = 2,
+                OwnerId = Guid.Parse("fe89f407-abf0-42e3-b5d8-70c0915503eb"),
+                TotalDistance = 105,
+                TotalScore = 105,
+                Active = false,
+                Id = Guid.Parse("68c21187-224c-4c51-8efb-f830c00de0bc")
             },
         ];
 
