@@ -20,5 +20,17 @@ namespace RoadTripTests.ServiceTests
 
             foundOwnerIds.Should().Contain(ownerId);
         }
+
+        [Theory]
+        [InlineData(Owner1)]
+        public async Task GetActiveQuizzesForOwner_OnlyGetsActiveForOwner(string ownerIdString)
+        {
+            Guid ownerId = Guid.Parse(ownerIdString);
+            IQuizService quizService = new FakeQuizService();
+            var foundQuizzes = await quizService.GetActiveQuizzesForOwner(ownerId);
+
+            foundQuizzes.Should().OnlyContain(x => x.Active);
+            foundQuizzes.Should().OnlyContain(x=>x.OwnerId.Equals(ownerId));
+        }
     }
 }

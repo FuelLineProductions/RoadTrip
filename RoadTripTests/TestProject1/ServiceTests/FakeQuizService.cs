@@ -6,7 +6,7 @@ namespace RoadTripTests.ServiceTests
 {
     public class FakeQuizService : IQuizService
     {
-        private List<Quiz> FakeQuizzes = [
+        private readonly ImmutableList<Quiz> FakeQuizzes = [
                 new Quiz
                 {
                     Title = "Title1",
@@ -54,7 +54,7 @@ namespace RoadTripTests.ServiceTests
         /// <inheritdoc/>
         public async Task<ICollection<Quiz>> GetActiveQuizzesForOwner(Guid ownerId)
         {
-            throw new NotImplementedException();
+            return FakeQuizzes.Where(x => x.Active && x.OwnerId.Equals(ownerId)).ToList();
         }
 
         /// <inheritdoc/>
