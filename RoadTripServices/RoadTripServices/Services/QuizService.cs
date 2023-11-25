@@ -1,6 +1,5 @@
 ﻿using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripDb.Repos;
-using RoadTrip.ViewModels;
 using Serilog;
 using System.Collections.Immutable;
 

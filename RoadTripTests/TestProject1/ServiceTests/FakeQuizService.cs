@@ -60,7 +60,7 @@ namespace RoadTripTests.ServiceTests
         /// <inheritdoc/>
         public async Task<Quiz> GetQuiz(Guid quizId)
         {
-            throw new NotImplementedException();
+            return FakeQuizzes.FirstOrDefault(x=>x.Id.Equals(quizId)) ?? new();
         }
 
         /// <inheritdoc/>
