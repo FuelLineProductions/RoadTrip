@@ -12,7 +12,7 @@ namespace RoadTrip.ViewModels
             CorrectAnswer = question.CorrectAnswer;
             FuelRewardCorrectAnswer = question.FuelRewardCorrectAnswer;
             FuelRewardIncorrectAnswer = question.FuelRewardIncorrectAnswer;
-            PointsReward = question.PointsReward;            
+            PointsReward = question.PointsReward;
         }
 
         public bool Show { get; set; }

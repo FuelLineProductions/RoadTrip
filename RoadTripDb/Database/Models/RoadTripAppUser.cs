@@ -5,6 +5,5 @@
         public string PrimaryName { get; set; } = null!;
         public string Surname { get; set; } = null!;
         public string DisplayName { get; set; } = null!;
-
     }
 }

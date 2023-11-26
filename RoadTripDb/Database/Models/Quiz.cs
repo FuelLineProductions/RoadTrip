@@ -16,6 +16,7 @@ namespace RoadTrip.RoadTripDb.Database.Models
 
         [NotMapped]
         public virtual ICollection<Question> Questions { get; set; } = null!;
+
         [NotMapped]
         public virtual ICollection<Vehicle> Vehicles { get; set; } = null!;
     }

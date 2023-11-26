@@ -15,7 +15,7 @@ namespace RoadTrip.Hubs
         private readonly IFuelTypeRepo _fuelTypeRepo = fuelTypeRepo;
 
         public async Task AddQuiz(Quiz quiz)
-        {            
+        {
             var success = await _quizService.AddQuiz(quiz);
             await Clients.Caller.SendAsync("AddQuizSuccess", success);
         }
@@ -36,7 +36,7 @@ namespace RoadTrip.Hubs
         public async Task GetAllVehicles()
         {
             var vehicles = _vehicleRepo.GetAll().ToList();
-            foreach(var vehicle in vehicles)
+            foreach (var vehicle in vehicles)
             {
                 vehicle.FuelType = await _fuelTypeRepo.Get(vehicle.FuelTypeId);
             }
@@ -45,9 +45,8 @@ namespace RoadTrip.Hubs
 
         public async Task SetInitialQuizProgress(CurrentQuizProgress currentQuizProgress)
         {
-           
         }
-        
+
         public async Task UpdateCurrentQuizProgress(CurrentQuizProgress currentQuizProgress)
         {
             await Clients.User(currentQuizProgress.OwnerNameIdentifier).SendAsync("CurrentQuizProgress", currentQuizProgress);

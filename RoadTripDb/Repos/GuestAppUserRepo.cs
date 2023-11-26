@@ -6,6 +6,7 @@ namespace RoadTrip.RoadTripDb.Repos
     public class GuestAppUserRepo(RoadTripDbContext context) : BaseRepo<GuestAppUser>(context), IGuestAppUserRepo
     {
         private readonly RoadTripDbContext _context = context;
+
         public async Task<GuestAppUser?> Get(Guid id)
         {
             return await _context.GuestAppUsers.FindAsync(id);

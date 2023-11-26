@@ -6,12 +6,14 @@ namespace RoadTrip.Data
     public class RoadTripUser : IdentityUser
     {
         public Guid RoadTripId { get; set; } = Guid.NewGuid();
+
         [PersonalData]
         public string PrimaryName { get; set; } = null!;
+
         [PersonalData]
         public string Surname { get; set; } = null!;
+
         [PersonalData]
         public string DisplayName { get; set; } = null!;
     }
-
 }

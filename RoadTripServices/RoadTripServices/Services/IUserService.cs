@@ -19,12 +19,14 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         /// <param name="newSubscription"></param>
         /// <returns></returns>
         Task<IndividualSubscription> UpdateIndividualSubscription(IndividualSubscription newSubscription);
+
         /// <summary>
         /// Get my sub view model from data
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns></returns>
         Task<MySubscription> GetIndividualSubscriptionViewModel(Guid ownerId);
+
         /// <summary>
         /// Gets whether the host can add new quizzes based on their sub tier
         /// </summary>

@@ -6,6 +6,7 @@ namespace RoadTrip.RoadTripDb.Repos
     public class IndividualSubscriptionRepo(RoadTripDbContext context) : BaseRepo<IndividualSubscription>(context), IIndividualSubscriptionRepo
     {
         private readonly RoadTripDbContext _context = context;
+
         public async Task<IndividualSubscription?> Get(Guid id)
         {
             return await _context.IndividualSubscriptions.FindAsync(id);

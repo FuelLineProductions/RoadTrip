@@ -48,7 +48,7 @@ namespace RoadTripTests.ServiceTests
         /// <inheritdoc/>
         public async Task<ICollection<Quiz>?> GetAllQuizzesForOwner(Guid? ownerId)
         {
-            if(!ownerId.HasValue || ownerId == Guid.Empty)
+            if (!ownerId.HasValue || ownerId == Guid.Empty)
             {
                 return null;
             }
@@ -64,7 +64,7 @@ namespace RoadTripTests.ServiceTests
         /// <inheritdoc/>
         public async Task<Quiz> GetQuiz(Guid quizId)
         {
-            return FakeQuizzes.FirstOrDefault(x=>x.Id.Equals(quizId)) ?? new();
+            return FakeQuizzes.FirstOrDefault(x => x.Id.Equals(quizId)) ?? new();
         }
 
         /// <inheritdoc/>
@@ -73,37 +73,37 @@ namespace RoadTripTests.ServiceTests
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>        
+        /// <inheritdoc/>
         public async Task<bool> UpdateQuiz(Quiz quiz)
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>      
+        /// <inheritdoc/>
         public async Task RemoveQuestionFromQuiz(Question question)
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>      
+        /// <inheritdoc/>
         public async Task RemoveVehicleFromQuiz(Quiz quiz, int vehicleId)
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>      
+        /// <inheritdoc/>
         public async Task<IImmutableList<Quiz>> GetOpenActiveQuizzes()
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>      
+        /// <inheritdoc/>
         public async Task<Quiz> GetInviteOnlyQuiz()
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>      
+        /// <inheritdoc/>
         public async Task<Quiz> ActivateQuiz(Quiz quiz)
         {
             throw new NotImplementedException();

@@ -6,6 +6,7 @@ namespace RoadTrip.RoadTripDb.Repos
     public class VehicleRepo(RoadTripDbContext context) : BaseRepo<Vehicle>(context), IVehicleRepo
     {
         private readonly RoadTripDbContext _context = context;
+
         /// <inheritdoc />
         public async Task<Vehicle?> Get(int id)
         {

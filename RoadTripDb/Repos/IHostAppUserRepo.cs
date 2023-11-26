@@ -10,6 +10,7 @@ namespace RoadTrip.RoadTripDb.Repos
         /// <param name="id"></param>
         /// <returns></returns>
         Task<HostAppUser?> GetHostAppUser(Guid id);
+
         /// <summary>
         /// Get host app users by user ID collection
         /// </summary>

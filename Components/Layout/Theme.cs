@@ -16,14 +16,12 @@ namespace RoadTrip.Components.Layout
                     Success = "#8bf216",
                     Error = "#bd120f",
                     Warning = "#e7eb2a",
-
                 },
                 PaletteDark = new PaletteDark()
                 {
                     Surface = "#2f3631",
                     Primary = "#9c2308"
                 }
-
             };
         }
     }

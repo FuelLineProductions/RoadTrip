@@ -7,6 +7,7 @@ namespace RoadTrip.RoadTripDb.Database.Models
     {
         [Key]
         public Guid GroupId { get; set; }
+
         public string GroupName { get; set; }
 
         [NotMapped]

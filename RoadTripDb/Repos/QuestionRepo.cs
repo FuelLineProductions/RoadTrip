@@ -6,6 +6,7 @@ namespace RoadTrip.RoadTripDb.Repos
     public class QuestionRepo(RoadTripDbContext context) : BaseRepo<Question>(context), IQuestionRepo
     {
         private readonly RoadTripDbContext _context = context;
+
         public async Task<Question?> Get(int id)
         {
             return await _context.Questions.FindAsync(id);

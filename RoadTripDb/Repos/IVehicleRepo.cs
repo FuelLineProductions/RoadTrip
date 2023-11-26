@@ -10,6 +10,7 @@ namespace RoadTrip.RoadTripDb.Repos
         /// <param name="id"></param>
         /// <returns></returns>
         Task<Vehicle?> Get(int id);
+
         /// <summary>
         /// Get a queryable vehicle
         /// </summary>

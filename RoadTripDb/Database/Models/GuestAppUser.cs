@@ -7,6 +7,7 @@ namespace RoadTrip.RoadTripDb.Database.Models
     {
         [Key]
         public Guid GuestId { get; set; }
+
         public Guid HostId { get; set; }
         public Guid? ActiveRoomId { get; set; }
 

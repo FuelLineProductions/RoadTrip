@@ -6,6 +6,7 @@ namespace RoadTrip.RoadTripDb.Repos
     public class HostAppUserRepo(RoadTripDbContext context) : BaseRepo<HostAppUser>(context), IHostAppUserRepo
     {
         private readonly RoadTripDbContext _context = context;
+
         /// <inheritdoc />
         public async Task<HostAppUser?> GetHostAppUser(Guid id)
         {
@@ -20,6 +21,5 @@ namespace RoadTrip.RoadTripDb.Repos
                 yield return _context.HostAppUsers.Find(id);
             }
         }
-
     }
 }

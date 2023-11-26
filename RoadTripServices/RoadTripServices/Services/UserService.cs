@@ -25,7 +25,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             DateTime? expiry = null;
 
             // if subscription is not free
-            // todo: make this not magic 
+            // todo: make this not magic
             if (addNewHostModel.SubscriptionTier.Name.ToLower() != "free")
             {
                 expiry = addNewHostModel.Yearly ? DateTime.UtcNow.AddYears(1) : DateTime.UtcNow.AddMonths(1);
@@ -113,5 +113,4 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             return quizzes.Count() <= tier.MaxGameSaves;
         }
     }
-
 }

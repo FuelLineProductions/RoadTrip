@@ -6,6 +6,7 @@ namespace RoadTrip.RoadTripDb.Database.Models
     {
         [Key]
         public Guid RoomId { get; set; }
+
         public Guid OwnerId { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
