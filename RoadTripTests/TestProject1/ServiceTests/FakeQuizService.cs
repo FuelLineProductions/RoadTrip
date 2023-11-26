@@ -46,9 +46,13 @@ namespace RoadTripTests.ServiceTests
         ];
 
         /// <inheritdoc/>
-        public async Task<ICollection<Quiz>> GetAllQuizzesForOwner(Guid ownerId)
+        public async Task<ICollection<Quiz>?> GetAllQuizzesForOwner(Guid? ownerId)
         {
-            return FakeQuizzes.Where(q => q.OwnerId.Equals(ownerId)).ToList();
+            if(!ownerId.HasValue || ownerId == Guid.Empty)
+            {
+                return null;
+            }
+            return FakeQuizzes.Where(q => q.OwnerId.Equals(ownerId.Value)).ToList();
         }
 
         /// <inheritdoc/>

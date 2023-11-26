@@ -10,7 +10,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         /// </summary>
         /// <param name="ownerId"></param>
         /// <returns></returns>
-        Task<ICollection<Quiz>> GetAllQuizzesForOwner(Guid ownerId);
+        Task<ICollection<Quiz>?> GetAllQuizzesForOwner(Guid? ownerId);
         /// <summary>
         /// Get active quizzes for owner
         /// </summary>

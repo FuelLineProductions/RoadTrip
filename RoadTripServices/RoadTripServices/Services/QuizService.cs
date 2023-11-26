@@ -12,9 +12,13 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         private readonly IVehicleRepo _vehicleRepo = vehicleRepo;
 
         /// <inheritdoc/>
-        public async Task<ICollection<Quiz>> GetAllQuizzesForOwner(Guid ownerId)
+        public async Task<ICollection<Quiz>?> GetAllQuizzesForOwner(Guid? ownerId)
         {
-            var quizzes = _quizRepo.GetManyForOwner(ownerId).ToList();
+            if (!ownerId.HasValue || ownerId == Guid.Empty)
+            {
+                return null;
+            }
+            var quizzes = _quizRepo.GetManyForOwner(ownerId.Value).ToList();
             var outputQuizzes = new List<Quiz>();
             foreach (var quiz in quizzes)
             {

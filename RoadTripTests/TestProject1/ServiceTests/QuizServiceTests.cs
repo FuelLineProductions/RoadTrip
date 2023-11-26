@@ -18,6 +18,7 @@ namespace RoadTripTests.ServiceTests
             IEnumerable<Quiz> foundQuizzes = await quizService.GetAllQuizzesForOwner(ownerId);
             var foundOwnerIds = foundQuizzes.Select(f => f.OwnerId);
 
+            foundOwnerIds.Should().NotBeNullOrEmpty();
             foundOwnerIds.Should().Contain(ownerId);
         }
 
@@ -30,7 +31,7 @@ namespace RoadTripTests.ServiceTests
             var foundQuizzes = await quizService.GetActiveQuizzesForOwner(ownerId);
 
             foundQuizzes.Should().OnlyContain(x => x.Active);
-            foundQuizzes.Should().OnlyContain(x=>x.OwnerId.Equals(ownerId));
+            foundQuizzes.Should().OnlyContain(x => x.OwnerId.Equals(ownerId));
         }
 
         private const string Quiz1Id = "c111a97f-17f9-4605-8d21-fc5364f4f1c8";
@@ -41,13 +42,31 @@ namespace RoadTripTests.ServiceTests
         [InlineData(Quiz1Id)]
         [InlineData(Quiz2Id)]
         [InlineData(Quiz3Id)]
-        public  async Task GetQuizById_GetsOnlyQuizWithThatId(string quiz1Id)
+        public async Task GetQuizById_GetsOnlyQuizWithThatId(string quiz1Id)
         {
             Guid quizId = Guid.Parse(quiz1Id);
             IQuizService quizService = new FakeQuizService();
             var quiz = await quizService.GetQuiz(quizId);
             quiz.Should().NotBeNull();
             quiz.Id.Should().Be(quizId);
+        }
+
+        [Fact]
+        public async Task GetAllQuizzesForOwner_EmptyGuidReturnsNull()
+        {
+            var emptyGuid = Guid.Empty;
+            IQuizService quizService = new FakeQuizService();
+            var quizzes = await quizService.GetAllQuizzesForOwner(emptyGuid);
+            quizzes.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetAllQuizzesForOwner_NullGuidReturnsNull()
+        {
+            Guid? nullGuid = null;
+            IQuizService quizService = new FakeQuizService();
+            var quizzes = await quizService.GetAllQuizzesForOwner(nullGuid);
+            quizzes.Should().BeNull();
         }
     }
 }
