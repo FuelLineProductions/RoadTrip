@@ -48,8 +48,8 @@ namespace RoadTripTests.ServiceTests
         {
             Guid ownerId = Guid.Parse(ownerIdString);
             IQuizService quizService = new FakeQuizService();
-            IEnumerable<Quiz> foundQuizzes = await quizService.GetAllQuizzesForOwner(ownerId);
-            var foundOwnerIds = foundQuizzes.Select(f => f.OwnerId);
+            var foundQuizzes = await quizService.GetAllQuizzesForOwner(ownerId);
+            var foundOwnerIds = foundQuizzes?.Select(f => f.OwnerId);
 
             foundOwnerIds.Should().NotBeNullOrEmpty();
             foundOwnerIds.Should().Contain(ownerId);
