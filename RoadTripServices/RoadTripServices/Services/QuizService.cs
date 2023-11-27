@@ -47,9 +47,14 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Quiz> GetQuiz(Guid quizId)
+        public async Task<Quiz?> GetQuiz(Guid? quizId)
         {
-            var quiz = await _quizRepo.Get(quizId);
+            if (!quizId.HasValue || quizId == Guid.Empty)
+            {
+                return null;
+            }
+
+            var quiz = await _quizRepo.Get(quizId.Value);
             if (quiz == null)
             {
                 ArgumentNullException.ThrowIfNull(quiz, $"Could not find quiz {quizId}");

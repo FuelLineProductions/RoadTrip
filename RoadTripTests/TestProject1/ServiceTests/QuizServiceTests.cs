@@ -5,6 +5,12 @@ namespace RoadTripTests.ServiceTests
 {
     public class QuizServiceTests
     {
+        // Setting the Interface as a newable fake service allows us to test the desired functionaliy of the implementation
+        // All implementations should handle the expected behaviour the same way regardless of the infrastructure implementation
+        // This means when calling the interface you always get the desired result, regardless of implementation
+        // This does mean the the infracture pulling out the data is not actually tested, but if the concreate class is implemented correctly, this should be easier to troubleshoot and identify
+        // as we have confidence the implementation of the business logic is sound
+
         private const string Owner1 = "ed89f407-abf0-42e3-b5d8-70c0915503eb";
         private const string Owner2 = "fe89f407-abf0-42e3-b5d8-70c0915503eb";
         private const string Quiz1Id = "c111a97f-17f9-4605-8d21-fc5364f4f1c8";
@@ -66,6 +72,24 @@ namespace RoadTripTests.ServiceTests
             var quiz = await quizService.GetQuiz(quizId);
             quiz.Should().NotBeNull();
             quiz.Id.Should().Be(quizId);
+        }
+
+        [Fact]
+        public async Task GetQuizById_NullIdReturnsNull()
+        {
+            Guid? quizId = null;
+            IQuizService quizService = new FakeQuizService();
+            var quiz = await quizService.GetQuiz(quizId);
+            quiz.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetQuizById_EmptyIdReturnsNull()
+        {
+            Guid quizId = Guid.Empty;
+            IQuizService quizService = new FakeQuizService();
+            var quiz = await quizService.GetQuiz(quizId);
+            quiz.Should().BeNull();
         }
     }
 }

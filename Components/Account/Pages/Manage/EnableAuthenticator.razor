@@ -12,6 +12,7 @@
 @inject UrlEncoder UrlEncoder
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
+@inject IJSRuntime JS
 
 <PageTitle>Configure authenticator app</PageTitle>
 
@@ -40,7 +41,7 @@
                 <li>
                     <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
                     <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
-                    <div></div>
+                    
                     <div data-url="@authenticatorUri"></div>
                 </li>
                 <li>
@@ -77,6 +78,7 @@
     private string? sharedKey;
     private string? authenticatorUri;
     private IEnumerable<string>? recoveryCodes;
+    private IJSObjectReference? jsModule;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -89,6 +91,17 @@
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
         await LoadSharedKeyAndQrCodeUriAsync(user);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./js/qr.js");
+
+            await jsModule.InvokeVoidAsync("load");
+        }
     }
 
     private async Task OnValidSubmitAsync()
@@ -134,6 +147,7 @@
         sharedKey = FormatKey(unformattedKey!);
 
         var email = await UserManager.GetEmailAsync(user);
+        
         authenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
     }
 

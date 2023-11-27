@@ -24,7 +24,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         /// </summary>
         /// <param name="quizId"></param>
         /// <returns></returns>
-        Task<Quiz> GetQuiz(Guid quizId);
+        Task<Quiz?> GetQuiz(Guid? quizId);
 
         /// <summary>
         /// Add a new quiz

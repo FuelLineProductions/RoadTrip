@@ -62,8 +62,12 @@ namespace RoadTripTests.ServiceTests
         }
 
         /// <inheritdoc/>
-        public async Task<Quiz> GetQuiz(Guid quizId)
+        public async Task<Quiz?> GetQuiz(Guid? quizId)
         {
+            if (!quizId.HasValue || quizId == Guid.Empty)
+            {
+                return null;
+            }
             return FakeQuizzes.FirstOrDefault(x => x.Id.Equals(quizId)) ?? new();
         }
 
