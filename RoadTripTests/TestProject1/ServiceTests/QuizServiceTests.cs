@@ -71,7 +71,7 @@ namespace RoadTripTests.ServiceTests
             IQuizService quizService = new FakeQuizService();
             var quiz = await quizService.GetQuiz(quizId);
             quiz.Should().NotBeNull();
-            quiz.Id.Should().Be(quizId);
+            quiz?.Id.Should().Be(quizId);
         }
 
         [Fact]
