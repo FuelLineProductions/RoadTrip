@@ -5,8 +5,8 @@ namespace RoadTripTests.ServiceTests
 {
     public class QuizServiceTests
     {
-        // Setting the Interface as a newable fake service allows us to test the desired functionaliy of the implementation
-        // All implementations should handle the expected behaviour the same way regardless of the infrastructure implementation
+        // Setting the Interface as a newable fake service allows us to test the desired functionality of the implementation
+        // All concrete implementations should handle the expected behaviour the same way regardless of the infrastructure
         // This means when calling the interface you always get the desired result, regardless of implementation
         // This does mean the the infracture pulling out the data is not actually tested, but if the concreate class is implemented correctly, this should be easier to troubleshoot and identify
         // as we have confidence the implementation of the business logic is sound
