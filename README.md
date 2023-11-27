@@ -12,8 +12,8 @@
     - This should be a filepath on your machine that the code will have access to, remember to use the file name prefix
     - Example: `D:\\RoadTrip\\Logs\\RoadTripLog_.txt`
 - Next open up package manager console (assuming you are using Visual Studio, otherwise you will need to get the syntax for what you are using)
-    -	    update-database -Context RoadTripContextDb
-	-       update-database -Context RoadTripIdentityContextDb
+    -	    update-database -Context RoadTripDbContext
+	-       update-database -Context RoadTripIdentityDbContext
     - This will update your DBs you setup in appsettings to contain the migrations needed to login and add your own data
 
 - Use the following sql to create the Log DB
