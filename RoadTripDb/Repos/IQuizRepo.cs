@@ -6,9 +6,9 @@ namespace RoadTrip.RoadTripDb.Repos
     {
         Task<Quiz?> Get(Guid id);
 
-        IEnumerable<Quiz?> GetMany(ICollection<Guid> ids);
+        IEnumerable<Quiz>? GetMany(ICollection<Guid> ids);
 
-        IEnumerable<Quiz?> GetManyForOwner(Guid id);
+        IEnumerable<Quiz>? GetManyForOwner(Guid id);
 
         Task AddVehicleToQuiz(Guid quizId, int vehicleId);
 

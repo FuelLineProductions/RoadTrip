@@ -1,0 +1,55 @@
+﻿@using RoadTrip.RoadTripDb.Database.Models
+@using RoadTrip.ViewModels
+<MudDialog>
+    <DialogContent>
+        <AuthorizeView>
+            <Authorized>
+                <MudCard>                
+                    <MudCardContent>
+                        @if (ActiveQuizHostView != null)
+                        {
+                            <MudTable Items="@ActiveQuizHostView" Context="active">
+                                <HeaderContent>
+                                    <MudTh>Guest Display Name</MudTh>
+                                    <MudTh>Current Fuel Reading</MudTh>
+                                    <MudTh>Current Quiz Score</MudTh>
+                                    <MudTh>Current Question</MudTh>
+                                    <MudTh>Current Answer</MudTh>
+                                    <MudTh>Started Current Question</MudTh>
+                                    <MudTh>Initial Fuel Guess</MudTh>
+                                    <MudTh>Quiz Started At</MudTh>
+                                    <MudTh>Started with score</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd>@(active.GuestAppUser?.DisplayName ?? ($"{active.GuestAppUser?.PrimaryName} {active.GuestAppUser?.Surname}") ?? "Unknown")</MudTd>
+                                    <MudTd>@active.CurrentFuel</MudTd>
+                                        <MudTd>@active.CurrentScore</MudTd>
+                                        <MudTd>@active.CurrentQuestion</MudTd>
+                                        <MudTd>@active.CurrentAnswer</MudTd>
+                                        <MudTd>@active.StartedQuestion</MudTd>
+                                        <MudTd>@active.FuelGuess</MudTd>
+                                        <MudTd>@active.QuizStarted</MudTd>
+                                        <MudTd>@active.StartScore</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </Authorized>
+            <NotAuthorized>
+                <MudText Typo="Typo.body2">Please Log In</MudText>
+            </NotAuthorized>
+        </AuthorizeView>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public IEnumerable<ActiveQuizProgressViewModel>? ActiveQuizHostView { get; set; } = null;
+    void Close() => MudDialog.Cancel();
+
+
+}

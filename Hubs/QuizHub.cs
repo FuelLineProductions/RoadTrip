@@ -7,12 +7,13 @@ using Serilog;
 
 namespace RoadTrip.Hubs
 {
-    public class QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo) : Hub
+    public class QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo, IGuestAppUserRepo guestAppUserRepo) : Hub
     {
         private readonly IUserService _userService = userService;
         private readonly IQuizService _quizService = quizService;
         private readonly IVehicleRepo _vehicleRepo = vehicleRepo;
         private readonly IFuelTypeRepo _fuelTypeRepo = fuelTypeRepo;
+        private readonly IGuestAppUserRepo _guestAppUserRepo = guestAppUserRepo;
 
         public async Task AddQuiz(Quiz quiz)
         {
@@ -43,13 +44,65 @@ namespace RoadTrip.Hubs
             await Clients.Caller.SendAsync("AllVehicles", vehicles);
         }
 
-        public async Task SetInitialQuizProgress(CurrentQuizProgress currentQuizProgress)
+        public async Task SetInitialQuizProgress(Quiz quiz, string hostName, IEnumerable<GuestAppUser> users, bool startGame)
         {
+            var intializedQuiz = await _quizService.InitializeActiveQuiz(quiz, hostName);
+            if (intializedQuiz != null)
+            {
+                if (!startGame)
+                {
+                    Log.Information("Quiz initalised, but start not requested");
+                    var converted = _quizService.ConvertQuizProgressToViewModel(intializedQuiz);
+                    await Clients.User(hostName).SendAsync("InitializedQuizzes", converted);
+                }
+                else
+                {
+                    Log.Information("Quiz initalised, Game started");
+                    var addedUsers = _quizService.AddUsersToActiveQuiz(intializedQuiz, users);
+                    if (addedUsers != null)
+                    {
+                        var started = _quizService.StartGame(addedUsers);
+                        var converted = _quizService.ConvertQuizProgressToViewModel(started);
+                        await Clients.User(hostName).SendAsync("InitializedQuizzes", converted);
+                    }
+                }
+            }
         }
 
-        public async Task UpdateCurrentQuizProgress(CurrentQuizProgress currentQuizProgress)
+        public async Task ActivateQuiz(Quiz quiz)
         {
-            await Clients.User(currentQuizProgress.OwnerNameIdentifier).SendAsync("CurrentQuizProgress", currentQuizProgress);
+            var activated = await _quizService.ActivateQuiz(quiz);
+            if (activated != null)
+            {
+                await Clients.Caller.SendAsync("ActivatedQuiz", activated);
+            }
         }
+
+        public async Task RequestToJoinQuiz(Quiz quizToJoin, GuestAppUser guestAppUser)
+        {
+            var hostName = _quizService.GetHostNameIdentifierForActiveQuiz(quizToJoin);
+
+            if (!string.IsNullOrWhiteSpace(hostName))
+            {
+                await Clients.User(hostName).SendAsync("GuestRequest", guestAppUser);
+            }
+        }
+
+        public async Task OpenQuizzes()
+        {
+            var quizzes = await _quizService.GetOpenActiveQuizzes();
+            await Clients.Caller.SendAsync("JoinableQuizzes", quizzes);
+        }
+
+        public async Task SetupGuest(GuestAppUser guest)
+        {
+            var createdGuest = await _guestAppUserRepo.AddAsync(guest);
+            await Clients.Caller.SendAsync("CreatedGuest", createdGuest);
+        }
+
+        //public async Task UpdateCurrentQuizProgress(CurrentQuizProgress currentQuizProgress)
+        //{
+        //    await Clients.User(currentQuizProgress.OwnerNameIdentifier).SendAsync("CurrentQuizProgress", currentQuizProgress);
+        //}
     }
 }

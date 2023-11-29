@@ -1,45 +1,97 @@
 ﻿@page "/JoinGame"
+@using Microsoft.AspNetCore.SignalR.Client
 @using RoadTrip.RoadTripDb.Database.Models
 @using RoadTrip.RoadTripServices.RoadTripServices.Services
 @using System.Collections.Immutable
-@inject IQuizService QuizService
-<MudContainer>
-    <MudText Typo="Typo.h2">Join a Game</MudText>
-    <MudCard>
-        <MudCardHeader>
-            Open games
-        </MudCardHeader>
-        <MudCardContent>
-            <MudTable Items="OpenQuizzes">
-                <HeaderContent>
-                    <MudTh>Title</MudTh>
-                    <MudTh>Description</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@context.Title</MudTd>
-                    <MudTd>@context.Description</MudTd>
-                    <MudTd><MudButton Color="Color.Secondary" Variant="Variant.Outlined">Join</MudButton></MudTd>
-                </RowTemplate>
-            </MudTable>
-        </MudCardContent>
-    </MudCard>
-    <MudCard>
-        <MudCardHeader>
+@inject NavigationManager Navigation
 
-        </MudCardHeader>
-        <MudCardContent>
+@if (CreateUser.GuestId == Guid.Empty)
+{
+    <MudContainer>
+        <MudCard>
+            <MudCardHeader>
+                <MudText>Setup your guest user accout</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudForm>
+                    <MudTextField @bind-Value="CreateUser.DisplayName" Label="Display Name" Placeholder="Display Name"></MudTextField>
+                    <MudTextField @bind-Value="CreateUser.PrimaryName" Label="Primary Name" Placeholder="Primary Name"></MudTextField>
+                    <MudTextField @bind-Value="CreateUser.Surname" Label="Surname" Placeholder="Surname"></MudTextField>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="SetupGuest">Save Details</MudButton>
+                </MudForm>
+            </MudCardContent>
+        </MudCard>
+    </MudContainer>
 
-        </MudCardContent>
-    </MudCard>
-</MudContainer>
-
-    @code {
+}
+@if (CreateUser.GuestId != Guid.Empty)
+{
+    <MudContainer>
+        <MudCard>
+            <MudCardHeader>
+                <MudText>Joining As @CreateUser.DisplayName</MudText>
+                </MudCardHeader>
+            </MudCard>
+        </MudContainer>
+    <MudContainer>
+        <MudText Typo="Typo.h2">Join a Game</MudText>
+        <MudCard>
+            <MudCardHeader>
+                <MudText Typo="Typo.h3"> Open games</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTable Items="OpenQuizzes">
+                    <HeaderContent>
+                        <MudTh>Title</MudTh>
+                        <MudTh>Description</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Title</MudTd>
+                            <MudTd>@context.Description</MudTd>
+                            <MudTd><MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="(() => RequestToJoin(context))">Join</MudButton></MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+}
+@code {
     private IImmutableList<Quiz> OpenQuizzes { get; set; } = null!;
+    private HubConnection? HubConnection;
+    private GuestAppUser CreateUser { get; set; } = new() { GuestId = Guid.Empty };
 
     protected override async Task OnInitializedAsync()
     {
-        var quizzes = await QuizService.GetOpenActiveQuizzes();
-        OpenQuizzes = quizzes;
-        await InvokeAsync(StateHasChanged);
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(Navigation.ToAbsoluteUri("/QuizHub"))
+        .Build();
+
+        await HubConnection.StartAsync();
+
+        HubConnection.On<IImmutableList<Quiz>>("JoinableQuizzes", async quizzes =>
+        {
+            OpenQuizzes = quizzes;
+            await InvokeAsync(StateHasChanged);
+        });
+
+        HubConnection.On<GuestAppUser>("CreatedGuest", async guest =>
+        {
+            CreateUser.GuestId = guest.GuestId;
+            await InvokeAsync(StateHasChanged);
+        });
+
+        await HubConnection.InvokeAsync("OpenQuizzes");
+    }
+
+    private async Task SetupGuest()
+    {
+        if (HubConnection != null)
+            await HubConnection.InvokeAsync("SetupGuest", CreateUser);
+    }
+
+    private async Task RequestToJoin(Quiz selectedQuiz)
+    {
+        if (HubConnection != null && CreateUser.GuestId != Guid.Empty)
+            await HubConnection.InvokeAsync("RequestToJoinQuiz", selectedQuiz, CreateUser);
     }
 }

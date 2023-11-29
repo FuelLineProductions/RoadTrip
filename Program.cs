@@ -86,6 +86,9 @@ namespace RoadTrip
             builder.Services.AddTransient<IBaseRepo<Vehicle>, BaseRepo<Vehicle>>();
             builder.Services.AddTransient<IVehicleRepo, VehicleRepo>();
 
+            builder.Services.AddTransient<IBaseRepo<ActiveQuizProgress>, BaseRepo<ActiveQuizProgress>>();
+            builder.Services.AddTransient<IActiveQuizProgressRepo, ActiveQuizProgressRepo>();
+
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<IQuizService, QuizService>();
 

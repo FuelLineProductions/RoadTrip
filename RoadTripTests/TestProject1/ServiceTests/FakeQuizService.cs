@@ -1,5 +1,6 @@
 ﻿using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripServices.RoadTripServices.Services;
+using RoadTrip.ViewModels;
 using System.Collections.Immutable;
 
 namespace RoadTripTests.ServiceTests
@@ -109,6 +110,27 @@ namespace RoadTripTests.ServiceTests
 
         /// <inheritdoc/>
         public async Task<Quiz> ActivateQuiz(Quiz quiz)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        IAsyncEnumerable<ActiveQuizProgress>? IQuizService.InitializeActiveQuiz(Quiz quiz, string hostNameIdentifier, IEnumerable<GuestAppUser> guestAppUser)
+        {
+            throw new NotImplementedException();
+        }
+
+        IAsyncEnumerable<ActiveQuizProgress> IQuizService.StartGame(IAsyncEnumerable<ActiveQuizProgress> gamesToStart)
+        {
+            throw new NotImplementedException();
+        }
+
+        IAsyncEnumerable<ActiveQuizProgressViewModel>? IQuizService.ConvertQuizProgressToViewModel(IAsyncEnumerable<ActiveQuizProgress> activeQuizProgresses)
+        {
+            throw new NotImplementedException();
+        }
+
+        string? IQuizService.GetHostNameIdentifierForActiveQuiz(Quiz quiz)
         {
             throw new NotImplementedException();
         }

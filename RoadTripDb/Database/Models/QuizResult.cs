@@ -12,8 +12,5 @@ namespace RoadTrip.RoadTripDb.Database.Models
         public int FuelGuess { get; set; }
         public int QuestionsAnswered { get; set; }
         public int QuestionsCorrect { get; set; }
-
-        [NotMapped]
-        public virtual ICollection<Answer> Answers { get; set; } = null!;
     }
 }

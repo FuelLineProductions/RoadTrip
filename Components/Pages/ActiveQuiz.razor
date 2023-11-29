@@ -9,7 +9,7 @@
         </MudCardHeader>
         <MudCardContent>
             <MudText>Example Host View</MudText>
-            <QuizHostView Quiz="@ExampleQuiz" GuestProgress="@ExampleProgress"></QuizHostView>
+           @*  <QuizHostView Quiz="@ExampleQuiz" GuestProgress="@ExampleProgress"></QuizHostView> *@
             <MudText>Example Guest View</MudText>
             <QuizGuestView Quiz="@ExampleQuiz" QuizTaker="@ExampleQuizTaker"></QuizGuestView>
         </MudCardContent>
@@ -19,25 +19,25 @@
     [Parameter]
     public Guid QuizId { get; set; }
 
-    private List<CurrentQuizProgress> ExampleProgress { get; set; } = new List<CurrentQuizProgress>()
-    {
-        new CurrentQuizProgress
-        {
-            CurrentFuel = 10,
-            CurrentQuestion = "Example Question 1",
-            CurrentScore = 10,
-            DisplayName = "Example User 1",
-            StartedQuestion = DateTime.Now.AddMinutes(-10)
-        },
-        new CurrentQuizProgress
-        {
-           CurrentFuel = 20,
-           CurrentQuestion = "Example Question 2",
-           CurrentScore = 15,
-           DisplayName = "Example User 2",
-            StartedQuestion = DateTime.Now.AddMinutes(-5)
-         }
-    };
+    // private List<CurrentQuizProgress> ExampleProgress { get; set; } = new List<CurrentQuizProgress>()
+    // {
+    //     new CurrentQuizProgress
+    //     {
+    //         CurrentFuel = 10,
+    //         CurrentQuestion = "Example Question 1",
+    //         CurrentScore = 10,
+    //         DisplayName = "Example User 1",
+    //         StartedQuestion = DateTime.Now.AddMinutes(-10)
+    //     },
+    //     new CurrentQuizProgress
+    //     {
+    //        CurrentFuel = 20,
+    //        CurrentQuestion = "Example Question 2",
+    //        CurrentScore = 15,
+    //        DisplayName = "Example User 2",
+    //         StartedQuestion = DateTime.Now.AddMinutes(-5)
+    //      }
+    // };
 
     private Quiz ExampleQuiz { get; set; } = new() { Title = "Example Quiz Title" ,
     Id = Guid.Empty,
@@ -70,8 +70,7 @@
     private GuestAppUser ExampleQuizTaker = new GuestAppUser()
     {
         DisplayName = "Example User",
-        GuestId = Guid.Empty,
-        HostId = Guid.Empty,        
+        GuestId = Guid.Empty,      
 
     };
 }

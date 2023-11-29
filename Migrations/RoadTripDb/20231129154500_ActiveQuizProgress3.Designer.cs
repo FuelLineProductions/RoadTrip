@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RoadTrip.RoadTripDb.Database;
 
@@ -11,9 +12,11 @@ using RoadTrip.RoadTripDb.Database;
 namespace RoadTrip.Migrations.RoadTripDb
 {
     [DbContext(typeof(RoadTripDbContext))]
-    partial class RoadTripDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231129154500_ActiveQuizProgress3")]
+    partial class ActiveQuizProgress3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +54,7 @@ namespace RoadTrip.Migrations.RoadTripDb
                     b.Property<int?>("FuelGuess")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("GuestId")
+                    b.Property<Guid>("GuestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("HostId")
@@ -130,9 +133,15 @@ namespace RoadTrip.Migrations.RoadTripDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ActiveRoomId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PrimaryName")
                         .IsRequired()

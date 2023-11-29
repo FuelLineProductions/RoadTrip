@@ -31,8 +31,8 @@
     public GuestAppUser QuizTaker { get; set; }
     private Question CurrentQuestion { get; set; }
     private string? CurrentAnswer { get; set; }
-    private CurrentQuizProgress CurrentProgress { get; set; }
-    private List<Answer> CompletedAnswers { get; set; } = new();
+    // private CurrentQuizProgress CurrentProgress { get; set; }
+   
     private int FuelNeededGuess { get; set; } = 0;
     private int CurrentScore { get; set; } = 0;
     private List<QuestionTakerView> Questions { get; set; } = new List<QuestionTakerView>();
@@ -77,15 +77,15 @@
             scoreGained = 0;
         }
 
-        CompletedAnswers.Add(new Answer
-            {
-                GivenAnswer = CurrentAnswer,
-                FuelChange = fuelChange,
-                ScoreGained = scoreGained,
-                GuestId = QuizTaker.GuestId,
-                QuizId = Quiz.Id,
-                FuelGuess = FuelNeededGuess,
-            });
+        // CompletedAnswers.Add(new Answer
+        //     {
+        //         GivenAnswer = CurrentAnswer,
+        //         FuelChange = fuelChange,
+        //         ScoreGained = scoreGained,
+        //         GuestId = QuizTaker.GuestId,
+        //         QuizId = Quiz.Id,
+        //         FuelGuess = FuelNeededGuess,
+        //     });
 
         CurrentAnswer = string.Empty;
         Questions.Remove(question);

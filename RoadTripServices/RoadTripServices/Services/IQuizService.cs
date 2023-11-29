@@ -1,4 +1,5 @@
 ﻿using RoadTrip.RoadTripDb.Database.Models;
+using RoadTrip.ViewModels;
 using System.Collections.Immutable;
 
 namespace RoadTrip.RoadTripServices.RoadTripServices.Services
@@ -73,5 +74,44 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         /// <param name="quiz"></param>
         /// <returns></returns>
         Task<Quiz> ActivateQuiz(Quiz quiz);
+        /// <summary>
+        /// Setup the active quiz to track progess as an initializer. This requires sending a collection of guests to setup their progress
+        /// </summary>
+        /// <param name="quiz"></param>
+        /// <param name="hostNameIdentifier"></param>
+        /// <returns>A collection of initial quiz progresses for the guest and host</returns>
+        Task<ActiveQuizProgress?> InitializeActiveQuiz(Quiz quiz, string hostNameIdentifier);
+        /// <summary>
+        /// Adds guests to a quiz
+        /// </summary>
+        /// <param name="activeQuizProgress"></param>
+        /// <param name="guestAppUsers"></param>
+        /// <returns></returns>
+        IAsyncEnumerable<ActiveQuizProgress>? AddUsersToActiveQuiz(ActiveQuizProgress activeQuizProgress, IEnumerable<GuestAppUser> guestAppUsers);
+        /// <summary>
+        /// Starts the given games
+        /// </summary>
+        /// <param name="gamesToStart"></param>
+        /// <returns>A collection of started games</returns>
+        IAsyncEnumerable<ActiveQuizProgress> StartGame(IAsyncEnumerable<ActiveQuizProgress> gamesToStart);
+        /// <summary>
+        /// Get a view model for the active quiz data set
+        /// </summary>
+        /// <param name="activeQuizProgresses"></param>
+        /// <returns>View model for the quiz progress</returns>
+        IAsyncEnumerable<ActiveQuizProgressViewModel>? ConvertQuizProgressToViewModel(IAsyncEnumerable<ActiveQuizProgress> activeQuizProgresses);
+        /// <summary>
+        /// Get a single view model conversion
+        /// </summary>
+        /// <param name="activeQuiz"></param>
+        /// <returns></returns>
+        Task<ActiveQuizProgressViewModel?> ConvertQuizProgressToViewModel(ActiveQuizProgress activeQuiz);
+        /// <summary>
+        /// Gets the host name ID for the quiz that is active
+        /// </summary>
+        /// <param name="quiz"></param>
+        /// <returns></returns>
+        string? GetHostNameIdentifierForActiveQuiz(Quiz quiz);
+
     }
 }
