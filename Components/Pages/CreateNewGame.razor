@@ -4,11 +4,13 @@
 @using RoadTrip.Components.QuizComponents
 @using RoadTrip.RoadTripServices.RoadTripServices.Services
 @using RoadTrip.ViewModels
+@using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<RoadTripUser> UserManager
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+
 @* <MudOverlay Visible="Loading" DarkBackground=true Absolute=true>
     <MudProgressCircular Indeterminate=true>Loading...</MudProgressCircular>
 </MudOverlay> *@
@@ -100,12 +102,7 @@
     protected override async Task OnInitializedAsync()
     {
         Loading = true;
-
-        HubConnection = new HubConnectionBuilder()
-        .WithUrl(Navigation.ToAbsoluteUri("/QuizHub"))
-        .Build();
-
-        await HubConnection.StartAsync();
+        await InvokeAsync(StateHasChanged);
 
         var authState = await AuthenticationStateProvider
             .GetAuthenticationStateAsync();
@@ -113,7 +110,24 @@
         var user = await UserManager.GetUserAsync(userClaim);
         if (user == null)
             return;
-        await InvokeAsync(StateHasChanged);
+
+        if (!string.IsNullOrWhiteSpace(user.Email))
+            await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
+
+
+        await UserManager.RemoveAuthenticationTokenAsync(user, "RoadTripWeb", "RoadTripAccessToken");
+        await UserManager.SetAuthenticationTokenAsync(user, "RoadTripWeb", "RoadTripAccessToken", "QuizHubAccess");
+        var token = await UserManager.GetAuthenticationTokenAsync(user, "RoadTripWeb", "RoadTripAccessToken");
+
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(Navigation.ToAbsoluteUri("/QuizHub"), options =>
+        {
+            options.AccessTokenProvider = () => Task.FromResult(token);
+        })
+        .Build();
+
+        await HubConnection.StartAsync();
+
 
         HubConnection.On<List<Quiz>>("AllQuizzesForOwner", async quizzes =>
         {

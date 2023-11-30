@@ -15,6 +15,7 @@ using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using IQuizRepo = RoadTrip.RoadTripDb.Repos.IQuizRepo;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace RoadTrip
 {
     public class Program
@@ -38,7 +39,49 @@ namespace RoadTrip
                     options.DefaultScheme = IdentityConstants.ApplicationScheme;
                     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
                 })
-                .AddIdentityCookies();
+                .AddJwtBearer(options =>
+                {
+                    // Configure the Authority to the expected value for
+                    // the authentication provider. This ensures the token
+                    // is appropriately validated.
+                    options.Authority = "https://localhost:7138"; // TODO: Update URL (Make appsettings var)
+
+                    // We have to hook the OnMessageReceived event in order to
+                    // allow the JWT authentication handler to read the access
+                    // token from the query string when a WebSocket or 
+                    // Server-Sent Events request comes in.
+
+                    // Sending the access token in the query string is required when using WebSockets or ServerSentEvents
+                    // due to a limitation in Browser APIs. We restrict it to only calls to the
+                    // SignalR hub in this code.
+                    // See https://docs.microsoft.com/aspnet/core/signalr/security#access-token-logging
+                    // for more information about security considerations when using
+                    // the query string to transmit the access token.
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["QuizHubAccess"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/QuizHub")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
+                })
+                .AddIdentityCookies()
+                ;
+
+            //builder.Services.AddAuthorization(options =>
+            //{
+                
+            //});
 
             var connectionString = builder.Configuration.GetConnectionString("RoadTripIdentityDb") ?? throw new InvalidOperationException("Connection string 'RoadTripIdentityDb' not found.");
             builder.Services.AddDbContext<RoadTripIdentityDbContext>(options =>

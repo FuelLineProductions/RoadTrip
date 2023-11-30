@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using RoadTrip.Data;
+using RoadTrip.Hubs.Security;
 using RoadTrip.RoadTripDb.Database.Models;
 using RoadTrip.RoadTripDb.Repos;
 using RoadTrip.RoadTripServices.RoadTripServices.Services;
@@ -7,13 +11,16 @@ using Serilog;
 
 namespace RoadTrip.Hubs
 {
-    public class QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo, IGuestAppUserRepo guestAppUserRepo) : Hub
+    public class QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo, IGuestAppUserRepo guestAppUserRepo, RoadTripIdentityDbContext idenitityDbContext, UserManager<RoadTripUser> userManager) : Hub
     {
         private readonly IUserService _userService = userService;
         private readonly IQuizService _quizService = quizService;
         private readonly IVehicleRepo _vehicleRepo = vehicleRepo;
         private readonly IFuelTypeRepo _fuelTypeRepo = fuelTypeRepo;
         private readonly IGuestAppUserRepo _guestAppUserRepo = guestAppUserRepo;
+        // TODO Make a repo for this instead
+        private readonly RoadTripIdentityDbContext _identityDbContext = idenitityDbContext;
+        private readonly UserManager<RoadTripUser> _userManager = userManager;
 
         public async Task AddQuiz(Quiz quiz)
         {
@@ -23,6 +30,12 @@ namespace RoadTrip.Hubs
 
         public async Task GetAllQuizzesForOwner(Guid ownerId)
         {
+            var isAuthenticated = await this.CheckUserIsAuthenticated(_identityDbContext, _userManager, ownerId);
+            if(!isAuthenticated)
+            {
+                Log.Error("User is not authenticated");
+                return;
+            }
             var quizzes = await _quizService.GetAllQuizzesForOwner(ownerId);
             Log.Information("Got quizzes for owner {quizzes}, {ownerId}", string.Join(", ", quizzes.Select(x => x.Title)), ownerId);
             await Clients.Caller.SendAsync("AllQuizzesForOwner", quizzes.Count != 0 ? quizzes.ToList() : []);
@@ -52,7 +65,7 @@ namespace RoadTrip.Hubs
                 if (!startGame)
                 {
                     Log.Information("Quiz initalised, but start not requested");
-                    var converted = _quizService.ConvertQuizProgressToViewModel(intializedQuiz);
+                    var converted = _quizService.ConvertQuizProgressToViewModel(intializedQuiz);                    
                     await Clients.User(hostName).SendAsync("InitializedQuizzes", converted);
                 }
                 else
