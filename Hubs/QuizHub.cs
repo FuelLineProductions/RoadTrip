@@ -99,7 +99,7 @@ namespace RoadTrip.Hubs
                 QuizId = quizToJoin.Id,
                 GuestId = guestAppUser.GuestId,
                 RequestedAt = DateTime.UtcNow,
-            });       
+            });
 
             await Clients.All.SendAsync("NewGuests", newGuest, guestAppUser);
         }

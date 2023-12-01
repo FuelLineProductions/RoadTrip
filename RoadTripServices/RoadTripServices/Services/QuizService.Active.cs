@@ -133,6 +133,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
             };
         }
 
+        /// <inheritdoc />
         public string? GetHostNameIdentifierForActiveQuiz(Quiz quiz)
         {
             var active = _activeQuizProgressRepo.GetQueryable().FirstOrDefault(x => x.QuizId.Equals(quiz.Id) && x.HostId.Equals(quiz.OwnerId) && !x.QuizEnded.HasValue);
@@ -157,6 +158,7 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
 
             return await _activeQuizProgressRepo.AddAsync(newActiveQuiz);
         }
+
         /// <inheritdoc />
         public async IAsyncEnumerable<ActiveQuizProgress> StartGame(IAsyncEnumerable<ActiveQuizProgress> gamesToStart)
         {
