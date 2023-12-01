@@ -156,8 +156,8 @@ namespace RoadTrip
                 (
                     connectionString: logDB,
                     sinkOptions: sinkOpts,
-                    columnOptions: columnOpts,
-                    appConfiguration: builder.Configuration
+                    appConfiguration: builder.Configuration,
+                    columnOptions: columnOpts
                 )
                 .CreateLogger();
 
