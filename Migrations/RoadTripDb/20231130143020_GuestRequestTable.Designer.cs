@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RoadTrip.RoadTripDb.Database;
 
@@ -11,9 +12,11 @@ using RoadTrip.RoadTripDb.Database;
 namespace RoadTrip.Migrations.RoadTripDb
 {
     [DbContext(typeof(RoadTripDbContext))]
-    partial class RoadTripDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231130143020_GuestRequestTable")]
+    partial class GuestRequestTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,6 +171,10 @@ namespace RoadTrip.Migrations.RoadTripDb
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GuestId");
+
+                    b.HasIndex("QuizId");
 
                     b.ToTable("GuestRequestJoinQuizzes");
                 });
@@ -454,6 +461,25 @@ namespace RoadTrip.Migrations.RoadTripDb
                     b.HasKey("Id");
 
                     b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("RoadTrip.RoadTripDb.Database.Models.GuestRequestJoinQuiz", b =>
+                {
+                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.GuestAppUser", "Guest")
+                        .WithMany()
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RoadTrip.RoadTripDb.Database.Models.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("Quiz");
                 });
 #pragma warning restore 612, 618
         }

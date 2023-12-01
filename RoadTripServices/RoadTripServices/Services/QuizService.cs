@@ -268,8 +268,25 @@ namespace RoadTrip.RoadTripServices.RoadTripServices.Services
         {
             foreach (var user in guestAppUsers)
             {
-                var newQuiz = activeQuizProgress;
-                newQuiz.GuestId = user.GuestId;
+                // Make a new db entry value for each user
+                var newQuiz = new ActiveQuizProgress()
+                {
+                    HostId = activeQuizProgress.HostId,
+                    QuizId = activeQuizProgress.QuizId,
+                    HostNameIdentifier = activeQuizProgress.HostNameIdentifier,
+                    GuestId = user.GuestId,
+                    FuelGuess = activeQuizProgress.FuelGuess,
+                    CompletedFuel = activeQuizProgress.CompletedFuel,
+                    CompletedScore = activeQuizProgress.CompletedScore,
+                    CurrentAnswer = activeQuizProgress.CurrentAnswer,
+                    CurrentFuel = activeQuizProgress.CurrentFuel,
+                    CurrentQuestionId = activeQuizProgress.CurrentQuestionId,
+                    CurrentScore = activeQuizProgress.CurrentScore,
+                    QuizEnded = activeQuizProgress.QuizEnded,
+                    QuizStarted = activeQuizProgress.QuizStarted,
+                    StartedQuestion = activeQuizProgress.StartedQuestion,
+                    StartScore = activeQuizProgress.StartScore
+                };
                 yield return await _activeQuizProgressRepo.AddAsync(newQuiz);
             }
         }

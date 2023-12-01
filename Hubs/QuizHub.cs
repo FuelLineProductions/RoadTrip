@@ -11,7 +11,7 @@ using Serilog;
 
 namespace RoadTrip.Hubs
 {
-    public class QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo, IGuestAppUserRepo guestAppUserRepo, RoadTripIdentityDbContext idenitityDbContext, UserManager<RoadTripUser> userManager) : Hub
+    public class QuizHub(IUserService userService, IQuizService quizService, IFuelTypeRepo fuelTypeRepo, IVehicleRepo vehicleRepo, IGuestAppUserRepo guestAppUserRepo, RoadTripIdentityDbContext idenitityDbContext, UserManager<RoadTripUser> userManager, IGuestQuizJoinRepo guestQuizJoinRepo) : Hub
     {
         private readonly IUserService _userService = userService;
         private readonly IQuizService _quizService = quizService;
@@ -21,6 +21,7 @@ namespace RoadTrip.Hubs
         // TODO Make a repo for this instead
         private readonly RoadTripIdentityDbContext _identityDbContext = idenitityDbContext;
         private readonly UserManager<RoadTripUser> _userManager = userManager;
+        private readonly IGuestQuizJoinRepo _guestQuizJoinRepo = guestQuizJoinRepo;
 
         public async Task AddQuiz(Quiz quiz)
         {
@@ -31,7 +32,7 @@ namespace RoadTrip.Hubs
         public async Task GetAllQuizzesForOwner(Guid ownerId)
         {
             var isAuthenticated = await this.CheckUserIsAuthenticated(_identityDbContext, _userManager, ownerId);
-            if(!isAuthenticated)
+            if (!isAuthenticated)
             {
                 Log.Error("User is not authenticated");
                 return;
@@ -65,8 +66,8 @@ namespace RoadTrip.Hubs
                 if (!startGame)
                 {
                     Log.Information("Quiz initalised, but start not requested");
-                    var converted = _quizService.ConvertQuizProgressToViewModel(intializedQuiz);                    
-                    await Clients.User(hostName).SendAsync("InitializedQuizzes", converted);
+                    var converted = _quizService.ConvertQuizProgressToViewModel(intializedQuiz);
+                    await Clients.Caller.SendAsync("InitializedQuizzes", converted);
                 }
                 else
                 {
@@ -76,7 +77,7 @@ namespace RoadTrip.Hubs
                     {
                         var started = _quizService.StartGame(addedUsers);
                         var converted = _quizService.ConvertQuizProgressToViewModel(started);
-                        await Clients.User(hostName).SendAsync("InitializedQuizzes", converted);
+                        await Clients.Caller.SendAsync("InitializedQuizzes", converted.ToBlockingEnumerable());
                     }
                 }
             }
@@ -93,12 +94,14 @@ namespace RoadTrip.Hubs
 
         public async Task RequestToJoinQuiz(Quiz quizToJoin, GuestAppUser guestAppUser)
         {
-            var hostName = _quizService.GetHostNameIdentifierForActiveQuiz(quizToJoin);
-
-            if (!string.IsNullOrWhiteSpace(hostName))
+            var newGuest = await _guestQuizJoinRepo.AddAsync(new GuestRequestJoinQuiz
             {
-                await Clients.User(hostName).SendAsync("GuestRequest", guestAppUser);
-            }
+                QuizId = quizToJoin.Id,
+                GuestId = guestAppUser.GuestId,
+                RequestedAt = DateTime.UtcNow,
+            });       
+
+            await Clients.All.SendAsync("NewGuests", newGuest, guestAppUser);
         }
 
         public async Task OpenQuizzes()

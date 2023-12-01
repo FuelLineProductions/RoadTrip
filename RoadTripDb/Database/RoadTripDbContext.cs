@@ -19,5 +19,6 @@ namespace RoadTrip.RoadTripDb.Database
         public DbSet<QuizResult> QuizResults { get; set; } = null!;
         public DbSet<ActiveQuizProgress> ActiveQuizProgresses { get; set; } = null!;
         public DbSet<PreviousAnswer> PreviousAnswers { get; set; } = null!;
+        public DbSet<GuestRequestJoinQuiz> GuestRequestJoinQuizzes { get; set; } = null!;
     }
 }

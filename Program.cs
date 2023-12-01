@@ -132,6 +132,9 @@ namespace RoadTrip
             builder.Services.AddTransient<IBaseRepo<ActiveQuizProgress>, BaseRepo<ActiveQuizProgress>>();
             builder.Services.AddTransient<IActiveQuizProgressRepo, ActiveQuizProgressRepo>();
 
+            builder.Services.AddTransient<IBaseRepo<GuestRequestJoinQuiz>, BaseRepo<GuestRequestJoinQuiz>>();
+            builder.Services.AddTransient<IGuestQuizJoinRepo, GuestQuizJoinRepo>();
+
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<IQuizService, QuizService>();
 

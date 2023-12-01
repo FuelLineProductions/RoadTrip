@@ -136,10 +136,9 @@
             await InvokeAsync(StateHasChanged);
         });
 
-        HubConnection.On<IAsyncEnumerable<ActiveQuizProgressViewModel>>("InitializedQuizzes", async initializedProgresses =>
+        HubConnection.On<IEnumerable<ActiveQuizProgressViewModel>>("InitializedQuizzes", async initializedProgresses =>
         {
-            InitializedProgresses = initializedProgresses.ToBlockingEnumerable();
-            if (InitializedProgresses.Any(x => x.QuizStarted.HasValue) && !InitializedProgresses.Any(x => x.QuizEnded.HasValue))
+            if (InitializedProgresses != null && InitializedProgresses.Any(x => x.QuizStarted.HasValue) && !InitializedProgresses.Any(x => x.QuizEnded.HasValue))
             {
                 StartGame = true;
             }
@@ -152,9 +151,13 @@
             await InvokeAsync(StateHasChanged);
         });
 
-        HubConnection.On<GuestAppUser>("GuestRequest", async guestRequestedToJoin =>
+        HubConnection.On<GuestRequestJoinQuiz, GuestAppUser>("NewGuests", async (guestRequestedToJoin, guestAppUser) =>
         {
-            GuestRequests.Add(guestRequestedToJoin);
+            if (guestRequestedToJoin.QuizId.Equals(SelectedQuiz.Id))
+            {
+                GuestRequests.Add(guestAppUser);
+            }
+
             await InvokeAsync(StateHasChanged);
         });
 
@@ -167,6 +170,7 @@
         // Then add this person to the
         AllowedGuests.Add(guestAppUser);
         GuestRequests.Remove(guestAppUser);
+        // TODO: Remove/ Expire from GuestRequestJoinQuiz table
         await InvokeAsync(StateHasChanged);
     }
 

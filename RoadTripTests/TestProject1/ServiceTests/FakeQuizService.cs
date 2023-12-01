@@ -112,25 +112,34 @@ namespace RoadTripTests.ServiceTests
         public async Task<Quiz> ActivateQuiz(Quiz quiz)
         {
             throw new NotImplementedException();
-        }
+        }      
 
-
-        IAsyncEnumerable<ActiveQuizProgress>? IQuizService.InitializeActiveQuiz(Quiz quiz, string hostNameIdentifier, IEnumerable<GuestAppUser> guestAppUser)
+        public IAsyncEnumerable<ActiveQuizProgress> StartGame(IAsyncEnumerable<ActiveQuizProgress> gamesToStart)
         {
             throw new NotImplementedException();
         }
 
-        IAsyncEnumerable<ActiveQuizProgress> IQuizService.StartGame(IAsyncEnumerable<ActiveQuizProgress> gamesToStart)
+        public IAsyncEnumerable<ActiveQuizProgressViewModel>? ConvertQuizProgressToViewModel(IAsyncEnumerable<ActiveQuizProgress> activeQuizProgresses)
         {
             throw new NotImplementedException();
         }
 
-        IAsyncEnumerable<ActiveQuizProgressViewModel>? IQuizService.ConvertQuizProgressToViewModel(IAsyncEnumerable<ActiveQuizProgress> activeQuizProgresses)
+        public string? GetHostNameIdentifierForActiveQuiz(Quiz quiz)
         {
             throw new NotImplementedException();
         }
 
-        string? IQuizService.GetHostNameIdentifierForActiveQuiz(Quiz quiz)
+        public Task<ActiveQuizProgress?> InitializeActiveQuiz(Quiz quiz, string hostNameIdentifier)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IAsyncEnumerable<ActiveQuizProgress>? AddUsersToActiveQuiz(ActiveQuizProgress activeQuizProgress, IEnumerable<GuestAppUser> guestAppUsers)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ActiveQuizProgressViewModel?> ConvertQuizProgressToViewModel(ActiveQuizProgress activeQuiz)
         {
             throw new NotImplementedException();
         }
