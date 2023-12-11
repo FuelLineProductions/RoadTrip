@@ -30,12 +30,12 @@
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd>@quiz.Title</MudTd>
-                            <MudTd>@quiz.Description</MudTd>
-                            <MudTd>
-                                <MudButton OnClick="(() => OpenPreviewDialogAsync(quiz))" Variant="Variant.Filled" Color="Color.Info">See More</MudButton>
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
+                        <MudTd>@quiz.Description</MudTd>
+                        <MudTd>
+                            <MudButton OnClick="(() => OpenPreviewDialogAsync(quiz))" Variant="Variant.Filled" Color="Color.Info">See More</MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
             }
             else
             {
